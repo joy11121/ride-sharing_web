@@ -5,7 +5,7 @@ import useSettings from 'app/hooks/useSettings';
 import Footer from '../../Footer';
 import Layout1Topbar from './Layout1Topbar';
 import { MatxSuspense } from 'app/components';
-import Toggle from 'app/views/search/Toggle';
+import Toggle from 'app/views/Toggle';
 
 const Layout1Root = styled(Box)(({ theme }) => ({
   display: 'flex',

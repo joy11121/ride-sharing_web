@@ -1,7 +1,7 @@
 export { default as Breadcrumb } from './Breadcrumb';
-export { default as ChatAvatar } from '../views/search/Chatbox/ChatAvatar';
-export { default as Chatbox } from '../views/search/Chatbox/Chatbox';
-export { default as ChatHead } from '../views/search/Chatbox/ChatHead';
+export { default as ChatAvatar } from '../views/Chatbox/ChatAvatar';
+export { default as Chatbox } from '../views/Chatbox/Chatbox';
+export { default as ChatHead } from '../views/Chatbox/ChatHead';
 export { default as FacebookIcon } from './icons/FacebookIcon';
 export { default as GoogleIcon } from './icons/GoogleIcon';
 export { MatxLayouts } from './MatxLayout/index';

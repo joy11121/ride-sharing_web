@@ -18,8 +18,22 @@ import ImageIcon from '@mui/icons-material/Image';
 import PostContext from 'app/contexts/PostContext';
 import { useContext } from "react";
 import img from './room-6.jpg'
-import BasicFormControl from './BasicFormControl';
-import RideMetadata from './rideMetadata';
+import BasicFormControl from '../BasicFormControl';
+
+const RideMetadata1 = [
+  'name',
+  'start',
+  'destination',
+  'startTime',
+  'endTime',
+  
+]
+const RideMetadata2 = [
+  'passby',
+  'price',
+  'capacity',
+]
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -42,6 +56,7 @@ export default function DriverModal({open, setOpen}) {
     const handleAddRide = () => {
         setOpen(false);
         setCardList(prev => [inputDict, ...prev]);
+        setInputDict({});
         console.log(cardList)
     }
 
@@ -52,7 +67,7 @@ export default function DriverModal({open, setOpen}) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         fullWidth
-        maxWidth='md'
+        maxWidth='lg'
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
@@ -78,30 +93,56 @@ export default function DriverModal({open, setOpen}) {
                 <img src={img}/>
             </Grid>
             <Grid item>   
-            <List
-                sx={{
-                    width: '100%',
-                    maxWidth: 360,
-                    bgcolor: 'background.paper',
-                }}
-                >
-                {RideMetadata.map((item) => (
-                  <>
-                    <ListItem>
-                      <ListItemAvatar>
-                      <Avatar>
-                        <ImageIcon />
-                      </Avatar>
-                      </ListItemAvatar>
-                      <BasicFormControl 
-                        inputDict={inputDict}
-                        setInputDict={setInputDict}
-                        type={item}
-                      />
-                    </ListItem>
-                  </>
-                ))}
-            </List>
+              <List
+                  sx={{
+                      width: '100%',
+                      maxWidth: 360,
+                      bgcolor: 'background.paper',
+                  }}
+                  >
+                  {RideMetadata1.map((item) => (
+                    <>
+                      <ListItem>
+                        <ListItemAvatar>
+                        <Avatar>
+                          <ImageIcon />
+                        </Avatar>
+                        </ListItemAvatar>
+                        <BasicFormControl 
+                          inputDict={inputDict}
+                          setInputDict={setInputDict}
+                          type={item}
+                        />
+                      </ListItem>
+                    </>
+                  ))}
+              </List>
+            </Grid>
+            <Grid>
+              <List
+                  sx={{
+                      width: '100%',
+                      maxWidth: 360,
+                      bgcolor: 'background.paper',
+                  }}
+                  >
+                  {RideMetadata2.map((item) => (
+                    <>
+                      <ListItem>
+                        <ListItemAvatar>
+                        <Avatar>
+                          <ImageIcon />
+                        </Avatar>
+                        </ListItemAvatar>
+                        <BasicFormControl 
+                          inputDict={inputDict}
+                          setInputDict={setInputDict}
+                          type={item}
+                        />
+                      </ListItem>
+                    </>
+                  ))}
+              </List>
             </Grid>
         </Grid>
         

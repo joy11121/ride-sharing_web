@@ -27,7 +27,7 @@ const StyledInput = styled(Input)(
   ({ theme }) => `
 
   .${inputClasses.input} {
-    width: 320px;
+    width: 220px;
     font-family: IBM Plex Sans, sans-serif;
     font-size: 0.875rem;
     font-weight: 400;

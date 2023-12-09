@@ -12,13 +12,18 @@ import ChatHead from './Chatbox/ChatHead';
 import Chatbox from './Chatbox/Chatbox';
 import CommuteIcon from '@mui/icons-material/Commute';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import AirportShuttleIcon from '@mui/icons-material/AirportShuttle';
+import HailIcon from '@mui/icons-material/Hail';
+import Tooltip from '@mui/material/Tooltip';
+import BasicRating from './rateItem';
+
 
 // styled components
-const MiniCart = styled(Box)({
+const Record = styled(Box)({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  width: 600,
+  width: 800,
 });
 
 const CartBox = styled(Box)({
@@ -39,9 +44,9 @@ const CartBox = styled(Box)({
 const ProductBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
-  padding: '8px 8px',
+  padding: '18px 18px',
   transition: 'background 300ms ease',
-  '&:hover': { background: 'rgba(0,0,0,0.01)' }
+  '&:hover': { background: 'rgba(0,0,0,0.05)' }
 });
 
 const IMG = styled('img')({ width: 48 });
@@ -55,7 +60,7 @@ const ProductDetails = styled(Box)({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: 'block',
-    width: 120,
+    width: 100,
     marginBottom: '4px'
   }
 });
@@ -70,36 +75,26 @@ function MyRides({ container, type }) {
 
   const handleDrawerToggle = () => setPanelOpen(!panelOpen);
 
-  const handleCheckoutClick = () => setPanelOpen(false);
-
-  const handleAddQty = (id) => {
-    setCardList((state) =>
-      state.map((item) => (item.id === id ? { ...item, qty: item.qty + 1 } : item))
-    );
-  };
-
-  const handleRemoveQty = (id) => {
-    setCardList((state) =>
-      state.map((item) => (item.id === id ? { ...item, qty: item.qty - 1 } : item))
-    );
-  };
-
-  const totalCost = cardList.reduce((prev, curr) => prev + curr.qty * curr.price, 0);
 
   return (
     <Fragment>
       {type === 'query' ?
-        <IconButton onClick={handleDrawerToggle}>
-          <Badge color="secondary" badgeContent={cardList.length}>
-            <CommuteIcon sx={{ color: 'text.primary' }} />
-          </Badge>
-        </IconButton>
+        
+        <Tooltip title="當前加入的行程" placement="bottom">
+          <IconButton onClick={handleDrawerToggle}>
+            <Badge color="secondary" badgeContent={cardList.length}>
+              <HailIcon sx={{ color: 'text.primary' }} />
+            </Badge>
+          </IconButton>
+        </Tooltip>
         : 
-        <IconButton onClick={handleDrawerToggle}>
-          <Badge color="secondary" badgeContent={cardList.length}>
-            <GroupAddIcon sx={{ color: 'text.primary' }} />
-          </Badge>
-        </IconButton>
+        <Tooltip title="當前擔任司機的行程" placement="bottom">
+          <IconButton onClick={handleDrawerToggle}>
+            <Badge color="secondary" badgeContent={cardList.length}>
+              <AirportShuttleIcon sx={{ color: 'text.primary' }} />
+            </Badge>
+          </IconButton>
+        </Tooltip>
       }
 
       <ThemeProvider theme={settings.themes[settings.activeTheme]}>
@@ -111,7 +106,7 @@ function MyRides({ container, type }) {
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
         >
-          <MiniCart>
+          <Record>
             {type === 'query' ?
               <CartBox>
                 <CommuteIcon color="primary" />
@@ -127,48 +122,65 @@ function MyRides({ container, type }) {
             <Box flexGrow={1} overflow="auto">
               {cardList.map((product, i) => (
                 <ProductBox key={i}>
-                  <Box mr="4px" display="flex" flexDirection="column">
-                    <IconButton size="small" onClick={() => handleAddQty(product.id)}>
-                      <KeyboardArrowUp />
-                    </IconButton>
-
-                    <IconButton
-                      onClick={() => handleRemoveQty(product.id)}
-                      disabled={!(product.qty - 1)}
-                      size="small"
-                    >
-                      <KeyboardArrowDown />
-                    </IconButton>
-                  </Box>
-
                   <Box mr={1}>
                     <IMG src={product.imgUrl} alt={product.name} />
                   </Box>
-
                   <ProductDetails>
                     <H6>{product.name}</H6>
                   </ProductDetails>
-                  <ProductDetails>
-                    <H6>Start</H6>
-                    <Small color="text.secondary">
-                      {product.start}
-                    </Small>
-                  </ProductDetails>
-                  <ProductDetails>
-                    <H6>Destination</H6>
-                    <Small color="text.secondary">
-                      {product.destination}
-                    </Small>
-                  </ProductDetails>
-                  <ProductDetails>
-                    <H6>Status</H6>
-                    <Small color="text.secondary">
-                      {product.status}
-                    </Small>
-                  </ProductDetails>
-                  <ChatHead>
+                  {type === 'query' && 
+                    <>
+                      <ProductDetails>
+                        <H6>抵達時間</H6>
+                        <Small color="text.secondary">
+                          {product.time}
+                        </Small>
+                      </ProductDetails>
+                      <ProductDetails>
+                        <H6>接送點</H6>
+                        <Small color="text.secondary">
+                          {product.pickupPoint}
+                        </Small>
+                      </ProductDetails>
+                      {product.status == 'Incomplete'?
+                      <ProductDetails>
+                        <H6>Status</H6>
+                        <Small color="text.secondary">
+                          {product.status}
+                        </Small>
+                      </ProductDetails>
+                      : 
+                      <ProductDetails>
+                        <BasicRating/>
+                      </ProductDetails>}
+                    </>
+                  }
+                  {type === 'post' && 
+                    <>
+                      <ProductDetails>
+                        <H6>起點</H6>
+                        <Small color="text.secondary">
+                          {product.start}
+                        </Small>
+                      </ProductDetails>
+                      <ProductDetails>
+                        <H6>終點</H6>
+                        <Small color="text.secondary">
+                          {product.destination}
+                        </Small>
+                      </ProductDetails>
+                      <ProductDetails>
+                        <H6>預計時間段</H6>
+                        <Small color="text.secondary">
+                          {product.startTime + "-" + product.endTime}
+                        </Small>
+                      </ProductDetails>
+                    </>
+                  }
+                  
+                  {/* <ChatHead>
                     <Chatbox />
-                  </ChatHead>
+                  </ChatHead> */}
                 </ProductBox>
               ))}
             </Box>
@@ -181,7 +193,7 @@ function MyRides({ container, type }) {
             >
               Checkout (${totalCost.toFixed(2)})
             </Button> */}
-          </MiniCart>
+          </Record>
         </Drawer>
       </ThemeProvider>
     </Fragment>

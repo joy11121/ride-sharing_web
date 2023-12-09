@@ -20,7 +20,7 @@ import { topBarHeight } from 'app/utils/constant';
 import { Span } from '../../Typography';
 import NotificationBar from '../../NotificationBar/NotificationBar';
 import CarRentalIcon from '@mui/icons-material/CarRental';
-import MyRides from 'app/views/search/MyRides';
+import MyRides from 'app/views/MyRides';
 
 import { signOut } from "firebase/auth";
 import { auth } from "../../config/firebase";
@@ -126,12 +126,12 @@ const Layout1Topbar = () => {
             </StyledIconButton>
 
             <StyledIconButton>
-              <Icon>web_asset</Icon>
-            </StyledIconButton>
-
-            <StyledIconButton>
               <Icon>star_outline</Icon>
             </StyledIconButton>
+
+            <MyRides type='query'/>
+            <MyRides type='post'/>
+
           </IconBox>
         </Box>
 
@@ -142,8 +142,7 @@ const Layout1Topbar = () => {
             <NotificationBar />
           </NotificationProvider>
 
-          <MyRides type='query'/>
-          <MyRides type='post'/>
+          
 
           <MatxMenu
             menuButton={

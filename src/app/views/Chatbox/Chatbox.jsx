@@ -3,7 +3,7 @@ import { ChatAvatar } from 'app/components';
 import { convertHexToRGB } from 'app/utils/utils';
 import { useCallback, useEffect, useState } from 'react';
 import ScrollBar from 'react-perfect-scrollbar';
-import { H5, H6, Span } from '../../../components/Typography';
+import { H5, H6, Span } from '../../components/Typography';
 
 const ChatContainer = styled('div')({
   height: '100%',

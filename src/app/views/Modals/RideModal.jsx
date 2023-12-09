@@ -58,7 +58,7 @@ export default function RideModal({open, setOpen, driver}) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Driver: {driver.name}
+          司機： {driver.name}
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -87,6 +87,17 @@ export default function RideModal({open, setOpen, driver}) {
                     bgcolor: 'background.paper',
                 }}
                 >
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <ImageIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText 
+                    primary="起點 / 終點"
+                    secondary={driver.start + " / " + driver.destination} 
+                  />
+                </ListItem>
                 {RideMetadata.map((item) => (
                   <ListItem>
                     <ListItemAvatar>
@@ -100,9 +111,18 @@ export default function RideModal({open, setOpen, driver}) {
                     />
                   </ListItem>
                 ))}
-                
-                <Divider variant="inset" component="li" />
-
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <ImageIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText 
+                    primary="已搭載人數 / 容量"
+                    secondary={driver.personCount + '/' + driver.capacity} 
+                  />
+                </ListItem>
+              
             </List>
             </Grid>
         </Grid>

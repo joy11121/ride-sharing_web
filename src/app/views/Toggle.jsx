@@ -1,7 +1,7 @@
 import { styled, useTheme } from '@mui/material';
-import { ChatHead, Chatbox } from '../../components';
+import { ChatHead, Chatbox } from '../components';
 import { useState } from 'react';
-import DriverModal from './DriverModal';
+import DriverModal from './Modals/DriverModal';
 import { Fab, Icon } from '@mui/material';
 
 const ToggleTheme = styled('div')(() => ({

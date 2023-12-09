@@ -41,7 +41,7 @@ const Filter = () => {
             </Box>
             <br/>
             <Divider textAlign="left">
-                <Chip label="Arrival Time" />
+                <Chip label="ARRIVAL TIME" />
             </Divider>
             <br/>
 

@@ -26,7 +26,7 @@ const SearchRides = () => {
       <ContentBox >
         <Grid container spacing={2}>
           <Container>
-            <Grid item xs={4}>
+            <Grid item xs={3.5}  >
               <Filter />
             </Grid>
             <Grid  item xs={12} marginLeft={5}>

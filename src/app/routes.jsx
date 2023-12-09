@@ -7,7 +7,7 @@ import Profile from './components/Profile';
 import SignUp from './components/SignUp';
 
 // My search page
-const SearchRides = Loadable(lazy(() => import('app/views/search/SearchRides')));
+const SearchRides = Loadable(lazy(() => import('app/views/SearchRides')));
 
 const routes = [
   {
