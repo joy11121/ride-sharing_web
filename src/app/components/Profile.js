@@ -7,6 +7,7 @@ import InfoCard2 from "../templates/InfoCard2";
 import DoughnutChart from "../templates/Doughnut";
 import { H2 } from "../templates/Typography";
 import NextRide from "../templates/NextRide";
+import instance from "api";
 
 
 const ContentBox = styled('div')(({ theme }) => ({
@@ -37,8 +38,9 @@ const H4 = styled('h4')(({ theme }) => ({
 const Profile = () => {
     const [name, setName] = useState("");
     const [gender, setGender] = useState("");
-    const [titel, setTitel] = useState("");
+    const [title, setTitle] = useState("");
     const [email, setEmail] = useState("");
+    const [user, setUser] = useState({});
     const [mostCommonRide, setMostCommonRide] = useState({name: "", cnt: 0});
     const [secondCommonRide, setSecondCommonRide] = useState({name: "", cnt: 0});
     const [othersRide, setOthersRide] = useState({name: "others", cnt: 0});
@@ -56,25 +58,35 @@ const Profile = () => {
 
 
     const [session, setSession] = useState(JSON.parse(localStorage.getItem("currentUser")) || undefined);
-
+    const id = JSON.parse(localStorage.getItem("currentUser"))['uid'];
+    console.log(id);
+    // const getData = async() => {
+    //     const user = await instance.get('/query', {params: { id }});
+    //     setUser(user);   
+    // }
+    const getData = async() => {
+        const user = await instance.get('/query', {params: { id }});
+        console.log(user);
+        setGender(user.data.gender);
+        setEmail(user.data.email);
+        setName(user.data.name);
+        setTitle(user.data.title);
+        setRated(user.data.host_rating);
+        setRatep(user.data.rsv_rating);
+        setEarn(user.data.earn);
+        setEarnNumber(user.data.host_hist.length);
+        setCost(user.data.cost);
+        setCostNumber(user.data.rsv_hist.length);
+    }
     useEffect(() => {
         // get the data from database
-        setGender("Female");
-        setName("Benny Tsai");
-        setTitel("Full Stack Engineer");
-        setEmail("benny232323@gmail.com");
+        getData();
         setMostCommonRide({name: 'Jim Huang', cnt: 100});
         setSecondCommonRide({name: 'Kevin Guo', cnt: 60});
         setOthersRide({name: 'Others', cnt: 21});
         setMostCommonDrive({name: 'UU', cnt: 5});
         setSecondCommonDrive({name: 'Brian Chen', cnt: 2});
         setOthersDrive({name: 'Others', cnt: 1});
-        setRated([0, 1, 0, 0, 7]);
-        setRatep([11, 20, 30, 40, 80]);
-        setEarn(1200);
-        setEarnNumber(38);
-        setCost(300);
-        setCostNumber(10);
         setNextRide({driver: 'UU', time: '2023/11/11 9:00', location: 'Hsinchu Zoo'});
     }, []); 
 
@@ -86,10 +98,10 @@ const Profile = () => {
             <Grid container spacing={3}>
               <Grid item lg={9} md={9} sm={12} xs={12}>
                 <Grid container spacing={2} sx={{ mb: '24px' }}>
-                  <InfoCard name="Name" value={name} setValue={setName} />
-                  <InfoCard name="Email" value={email} setValue={setEmail} />
-                  <InfoCard name="Work Title" value={titel} setValue={setTitel} />
-                  <InfoCard name="Gender" value={gender} setValue={setGender} />
+                  <InfoCard name="name" value={name} setValue={setName} />
+                  <InfoCard name="email" value={email} setValue={setEmail} />
+                  <InfoCard name="title" value={title} setValue={setTitle} />
+                  <InfoCard name="gender" value={gender} setValue={setGender} />
                 </Grid>
                 <Grid container spacing={2} sx={{ mb: 3 }}>
                   <InfoCard2 name="Rating as Driver" value={rated} amount={null} />

@@ -3,17 +3,18 @@ import mongoose from "mongoose";
 const user = new mongoose.Schema(
     {
         id: {type: String, require: true, unique: true},
-        name: {type: String, require: true},
-        title: {type: String, require: true},
-        email: {type: String, require: true},
-        gender: {type: String, require: true},
+        name: {type: String, default: ''},
+        title: {type: String, default: ''},
+        email: {type: String, default: ''},
+        gender: {type: String, default: ''},
         veh_no: {type: String, default: ''},
-        balance: {type: Number, default: 0},
+        earn: {type: Number, default: 0},
+        cost: {type: Number, default: 0},
 
         rsv_no: {type: String, default: ''},
         host_no: {type: String, default: ''},
         rsv_hist: [{type: [String], default: []}],
-        host_hist: {type: [String], default: []},
+        host_hist: [{type: [String], default: []}],
         rsv_rating: {type: [Number], default: [0, 0, 0, 0, 0]},
         host_rating: {type: [Number], default: [0, 0, 0, 0, 0]}
     },

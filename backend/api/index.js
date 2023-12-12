@@ -2,21 +2,30 @@ import {v4 as uuidv4} from 'uuid';
 import model from '../model/index.js';
 
 const update = async (req, res) => {
+    console.log(req.body);
     await model.user.updateOne({id: req.body.id}, req.body, {upsert: true}).exec();
     res.end();
 }
 
 const query = async (req, res) => {
-    const {id} = req.body;
-    const user = (await model.user.aggregate([
+    const {id} = req.query;
+    var user = (await model.user.aggregate([
         {$match: {id: id}}, {$project: {_id: 0, __v: 0}}
-    ]))[0];
+    ]));
 
+    if(user.length === 0) {
+        await model.user.updateOne({ id }, {}, {upsert: true}).exec();
+        user = (await model.user.aggregate([
+            {$match: {id: id}}, {$project: {_id: 0, __v: 0}}
+        ]))[0];
+    }
+    else
+        user = user[0];
     if (user.host_no !== '') {
         user.hosting = (await model.ongoing.aggregate([
             {$match: {no: user.host_no}}, {$project: {_id: 0, __v: 0}}
         ]))[0];
-    } else if (user.rsv !== '') {
+    } else if (user.rsv_no !== '') {
         const {_id, schedule, reserved} = (await model.ongoing.aggregate([
             {$match: {no: user.rsv_no}},
             {$project: {schedule: 1, reserved: 1}}

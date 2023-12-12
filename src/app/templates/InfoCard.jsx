@@ -8,6 +8,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import BadgeIcon from '@mui/icons-material/Badge';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import CheckIcon from '@mui/icons-material/Check';
+import instance from '../../api';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     display: 'flex',
@@ -38,9 +39,21 @@ const Heading = styled('h6')(({ theme }) => ({
 const InfoCard = ({name, value, setValue}) => {
 
     const [disabled, setDisabled] = useState(true);
+    const id = JSON.parse(localStorage.getItem("currentUser"))['uid'];
 
-    const handleClicked = () => {
-        setDisabled(prev => !prev);
+    const handleClicked = async() => {
+        if(disabled){
+            setDisabled(false);
+        }
+        else{
+            setDisabled(true);
+            await instance.post('/update',
+                {
+                    id,
+                    [name]: value,
+                }
+            )
+        }
     }
 
     const handleChange = (e) => {
@@ -48,15 +61,15 @@ const InfoCard = ({name, value, setValue}) => {
     }
 
     let icon = undefined;
-    if(name === 'Name')
+    if(name === 'name')
         icon = <AccountCircleIcon className='icon' />;
-    else if(name === 'Gender'){
-        if(value === 'Male')
+    else if(name === 'gender'){
+        if(value === 'male')
             icon = <FaceIcon className='icon'  />;
         else
             icon = <Face3Icon className='icon'  />;
     }
-    else if(name === 'Work Title')
+    else if(name === 'title')
         icon = <BadgeIcon className='icon'  />;
     else
         icon = <EmailIcon className='icon'  />;
