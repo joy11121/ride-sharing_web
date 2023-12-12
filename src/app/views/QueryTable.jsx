@@ -22,6 +22,8 @@ import { Paragraph } from 'app/components/Typography';
 import { useEffect } from "react";
 import RideModal from "./Modals/RideModal";
 
+import instance from "api";
+
 const drivers = [
   {
     name: "吉米",
@@ -186,6 +188,18 @@ const QueryTable = () => {
     setModalOpen(true);
     setModalDriver(drivers[index]);
   }
+
+
+  useEffect(() => {
+    const search = async() =>{
+      const res = await instance.get('/search', {
+        year: 2023, month: 12, day: 11, hour:10, minute:10, departure:'A', arrival:'A'
+      });
+      console.log(res);
+    };
+    search();
+    
+  }, []);
 
   return (
       <>
