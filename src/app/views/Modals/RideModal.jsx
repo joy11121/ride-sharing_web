@@ -14,15 +14,9 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import ImageIcon from '@mui/icons-material/Image';
-import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
-import Divider from '@mui/material/Divider';
 
-
-import QueryContext from "app/contexts/QueryContext";
-import { useContext } from "react";
 import img from './room-6.jpg'
-import RideMetadata from './rideMetadata';
+import instance from 'api';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -33,20 +27,27 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function RideModal({open, setOpen, driver}) {
-
-
-    const { cardList, setCardList } = useContext(QueryContext);
+export default function RideModal({open, setOpen, ride, dep, arr, id}) {
 
     const handleClose = () => {
         setOpen(false);
     };
 
-    const handleJoin = () => {
+    const handleJoin = async () => {
         setOpen(false);
-        setCardList(prev => [...prev, driver]);
+        const { data } = await instance.post('/reserve', 
+          {no: ride.no, pax_id: id, dep, arr}
+        );
     }
 
+    // no
+    // drv_id
+    // dep_hour
+    // dep_minute
+    // arr_hour
+    // arr_minute
+    // fare:
+    // rating:
 
   return (
     <Fragment>
@@ -58,7 +59,7 @@ export default function RideModal({open, setOpen, driver}) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          司機： {driver.name}
+          司機： {ride.drv_id}
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -94,23 +95,10 @@ export default function RideModal({open, setOpen, driver}) {
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText 
-                    primary="起點 / 終點"
-                    secondary={driver.start + " / " + driver.destination} 
+                    primary="上車時間"
+                    secondary={ride.dep_hour + ":" + ride.dep_minute} 
                   />
                 </ListItem>
-                {RideMetadata.map((item) => (
-                  <ListItem>
-                    <ListItemAvatar>
-                    <Avatar>
-                      <ImageIcon />
-                    </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText 
-                      primary={item.toUpperCase()} 
-                      secondary={driver[item]} 
-                    />
-                  </ListItem>
-                ))}
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
@@ -118,11 +106,32 @@ export default function RideModal({open, setOpen, driver}) {
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText 
-                    primary="已搭載人數 / 容量"
-                    secondary={driver.personCount + '/' + driver.capacity} 
+                    primary="抵達時間"
+                    secondary={ride.arr_hour + ":" + ride.arr_minute}  
                   />
                 </ListItem>
-              
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <ImageIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText 
+                    primary="價格"
+                    secondary={"$" + ride.fare}  
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <ImageIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText 
+                    primary="評價"
+                    secondary={ride.rating}  
+                  />
+                </ListItem>
             </List>
             </Grid>
         </Grid>

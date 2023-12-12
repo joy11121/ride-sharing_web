@@ -39,105 +39,7 @@ const drivers = [
     status: "Complete",
     imgUrl: '/assets/images/products/headphone-2.jpg',
   },
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Incomplete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Incomplete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Incomplete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Ccomplete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Complete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Incomplete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Incomplete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-];
+]
 
 const StyledTable = styled(Table)(() => ({
   whiteSpace: "pre",
@@ -170,10 +72,17 @@ const QueryTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalDriver, setModalDriver] = useState({});
+  const [modalRide, setModalRide] = useState({});
 
   // Switch between tables
   const [tableMode, setTableMode] = useState("search");
+
+  //Data
+  const [rides, setRides] = useState([]);
+  const id = '0001';
+  const dep = 'A';
+  const arr = 'B';
+  const year = 2023, month = 12, day = 12;
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -186,19 +95,19 @@ const QueryTable = () => {
 
   const handleOpenModal = (index) => {
     setModalOpen(true);
-    setModalDriver(drivers[index]);
+    console.log(rides[index])
+    setModalRide(rides[index]);
   }
 
 
   useEffect(() => {
     const search = async() =>{
-      const res = await instance.get('/search', {
-        year: 2023, month: 12, day: 11, hour:10, minute:10, departure:'A', arrival:'A'
-      });
-      console.log(res);
+      const {data} = await instance.get('/search', {params: {
+        year, month, day, hour:0, minute:0, departure:dep, arrival:arr
+      }});
+      setRides(data);
     };
-    search();
-    
+    search(); 
   }, []);
 
   return (
@@ -206,7 +115,10 @@ const QueryTable = () => {
       <RideModal 
         open={modalOpen}
         setOpen={setModalOpen}
-        driver={modalDriver}
+        ride={modalRide}
+        dep={dep}
+        arr={arr}
+        id={id}
       />
       <Box width="100%" overflow="auto">
         {tableMode !== "driver" && 
@@ -214,17 +126,17 @@ const QueryTable = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ px: 3 }} colSpan={1.5}>
-                    駕駛
+                    駕駛ID
+                </TableCell>
+                <TableCell sx={{ px: 0 }} colSpan={1.5}>
+                    上車時間
                 </TableCell>
                 <TableCell sx={{ px: 0 }} colSpan={1.5}>
                     抵達時間
                 </TableCell>
-                <TableCell sx={{ px: 0 }} colSpan={1}>
-                    上車地點
-                </TableCell>
-                <TableCell sx={{ px: 0 }} colSpan={1}>
+                {/* <TableCell sx={{ px: 0 }} colSpan={1}>
                     已搭乘人數/容量
-                </TableCell>
+                </TableCell> */}
                 <TableCell sx={{ px: 0 }} colSpan={1}>
                     駕駛評價
                 </TableCell>
@@ -238,30 +150,26 @@ const QueryTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {drivers
+              {rides
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((subscriber, index) => (
+                .map((ride, index) => (
                   <TableRow key={index}>
-                    {/* <TableCell align="left">{subscriber.name}</TableCell> */}
                     <TableCell colSpan={1.5} align="left" sx={{ px: 0, textTransform: 'capitalize' }}>
                       <Box display="flex" alignItems="center">
-                        <Avatar src={subscriber.imgUrl} />
-                        <Paragraph sx={{ m: 0, ml: 4 }}>{subscriber.name}</Paragraph>
+                        <Avatar src={ride.imgUrl} />
+                        <Paragraph sx={{ m: 0, ml: 4 }}>{ride.drv_id}</Paragraph>
                       </Box>
                     </TableCell>
-                    <TableCell colSpan={1.5}>{subscriber.arrivaltime}</TableCell>
-                    <TableCell colSpan={1}>{subscriber.pickupPoint}</TableCell>
-                    <TableCell sx={{ px: 0 }} align="left">
-                      {subscriber.personCount / subscriber.capacity < 0.5 ? (
-                          <Small bgcolor={bgPrimary}>{subscriber.personCount}/{subscriber.capacity}</Small>
-                        ) : (
-                          <Small bgcolor={bgError}>{subscriber.personCount}/{subscriber.capacity}</Small>
-                        )}
+                    <TableCell colSpan={1.5}>{ride.dep_hour + ':' + ride.dep_minute}</TableCell>
+                    <TableCell colSpan={1.5}>{ride.arr_hour + ':' + ride.arr_minute}</TableCell>
+                    <TableCell colSpan={1}>
+                      <Rating name="read-only" value={ride.rate} readOnly />
                     </TableCell>
                     <TableCell colSpan={1}>
-                      <Rating name="read-only" value={subscriber.rate} readOnly />
+                      <Small bgcolor={ride.fare > 1000 ? bgPrimary : bgError}>
+                        {'$' + ride.fare}
+                      </Small>
                     </TableCell>
-                    <TableCell colSpan={1}>${subscriber.price}</TableCell>
                     {tableMode=="search" && 
                       <TableCell colSpan={1}>
                         <Button 

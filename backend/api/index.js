@@ -66,7 +66,7 @@ const host = async (req, res) => {
         schedule,   // stop, hour, minute
     } = req.body;
     req.body.no = uuidv4();
-    req.body.no = drv_id;
+    // req.body.no = drv_id;
 
     const k = schedule.length - 1,
         base = 60 * schedule[0].hour + schedule[0].minute,
@@ -154,8 +154,13 @@ const cancel = async (req, res) => {
 }
 
 const search = async (req, res) => {
-    const {year, month, day, hour, minute, departure, arrival} = req.body;
-    console.log(hour, minute)
+    let {year, month, day, hour, minute, departure, arrival} = req.query;
+    year = parseInt(year);
+    month = parseInt(month);
+    day = parseInt(day);
+    hour = parseInt(hour);
+    minute = parseInt(minute);
+
     const rideshares = (await model.ongoing.aggregate([
         {$match: {year: year}},
         {$match: {month: month}},
@@ -166,10 +171,9 @@ const search = async (req, res) => {
     ])).filter((rideshare) => {
         const dep_idx = rideshare.schedule.findIndex((s) => s.stop === departure),
             arr_idx = rideshare.schedule.findIndex((s) => s.stop === arrival);
-
         // Too Late
         const schedule = rideshare.schedule;
-        if (schedule[dep_idx].hour * 60 +  schedule[dep_idx].minute <
+        if (schedule[dep_idx].hour * 60 + schedule[dep_idx].minute <
                 hour * 60 + minute) {
             return false;
         }
@@ -194,10 +198,14 @@ const search = async (req, res) => {
             arr_hour: rideshare.schedule[arr_idx].hour,
             arr_minute: rideshare.schedule[arr_idx].minute,
             fare: rideshare.schedule[arr_idx].accum_fare - 
-                rideshare.schedule[dep_idx].accum_fare
+                rideshare.schedule[dep_idx].accum_fare,
+
+            // Todo:
+            drv_name: undefined,
+            rating: undefined,
+
         }
     });
-
     res.send(rideshares);
 }
 

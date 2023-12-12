@@ -17,6 +17,8 @@ import HailIcon from '@mui/icons-material/Hail';
 import Tooltip from '@mui/material/Tooltip';
 import BasicRating from './rateItem';
 
+import instance from 'api';
+
 
 // styled components
 const Record = styled(Box)({
@@ -73,8 +75,29 @@ function MyRides({ container, type }) {
     type === 'query' ? QueryContext : PostContext
   );
 
-  const handleDrawerToggle = () => setPanelOpen(!panelOpen);
+  const [rides, setRides] = useState([]);
 
+  const handleDrawerToggle = async () => {
+    // Todo: get history
+    const queryRsv = async() =>{
+      const {data: {rsv_hist}} = await instance.get('/query', {params: {
+        id: "0001",
+      }});
+      setRides(rsv_hist);
+    }
+    const queryHost = async() =>{
+      const {data: {host_hist}} = await instance.get('/query', {params: {
+        id: "0001",
+      }});
+      setRides(host_hist);
+    }
+    if(type === 'query')
+      await queryRsv();
+    else
+      await queryHost();
+    console.log(rides);
+    setPanelOpen(!panelOpen);
+  };
 
   return (
     <Fragment>

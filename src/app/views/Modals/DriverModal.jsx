@@ -15,10 +15,10 @@ import Avatar from '@mui/material/Avatar';
 import ImageIcon from '@mui/icons-material/Image';
 
 
-import PostContext from 'app/contexts/PostContext';
-import { useContext } from "react";
 import img from './room-6.jpg'
-import BasicFormControl from '../BasicFormControl';
+import BasicFormControl from './BasicFormControl';
+
+import instance from 'api';
 
 const RideMetadata1 = [
   'name',
@@ -44,22 +44,51 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
+const id = '0001';
+
 export default function DriverModal({open, setOpen}) {
 
-    const { cardList, setCardList } = useContext(PostContext);
-    const [inputDict, setInputDict] = useState({});
+    const [inputDict, setInputDict] = useState({drv_id: id, schedule:[
+      {stop: 'A', hour: 10, minute: 10},
+      {stop: 'B', hour: 10, minute: 20},
+      {stop: 'C', hour: 10, minute: 30},
+      {stop: 'D', hour: 10, minute: 50},
+      {stop: 'A', hour: 11, minute: 10},
+      {stop: 'B', hour: 11, minute: 20},
+      {stop: 'C', hour: 11, minute: 30},
+      {stop: 'D', hour: 11, minute: 50},
+    ]});
 
     const handleClose = () => {
         setOpen(false);
     };
 
     const handleAddRide = () => {
+        const host = async() =>{
+          const {data} = await instance.post('/host', inputDict);
+          return data;
+        }
         setOpen(false);
-        setCardList(prev => [inputDict, ...prev]);
-        setInputDict({});
-        console.log(cardList)
+        host();
+        setInputDict({drv_id: id, 
+          schedule:[
+            {stop: 'A', hour: 10, minute: 10},
+            {stop: 'B', hour: 10, minute: 20},
+            {stop: 'C', hour: 10, minute: 30},
+            {stop: 'D', hour: 10, minute: 50},
+            {stop: 'A', hour: 11, minute: 10},
+            {stop: 'B', hour: 11, minute: 20},
+            {stop: 'C', hour: 11, minute: 30},
+            {stop: 'D', hour: 11, minute: 50},
+          ]
+        });
     }
 
+    // const {
+    //     price,
+    //     drv_id,
+    //     schedule,   // stop, hour, minute
+    // } = req.body;
 
   return (
     <Fragment>
@@ -71,7 +100,7 @@ export default function DriverModal({open, setOpen}) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Enter Driver's information:
+          輸入駕駛資訊
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -93,55 +122,19 @@ export default function DriverModal({open, setOpen}) {
                 <img src={img}/>
             </Grid>
             <Grid item>   
-              <List
-                  sx={{
-                      width: '100%',
-                      maxWidth: 360,
-                      bgcolor: 'background.paper',
-                  }}
-                  >
-                  {RideMetadata1.map((item) => (
-                    <>
-                      <ListItem>
-                        <ListItemAvatar>
-                        <Avatar>
-                          <ImageIcon />
-                        </Avatar>
-                        </ListItemAvatar>
-                        <BasicFormControl 
-                          inputDict={inputDict}
-                          setInputDict={setInputDict}
-                          type={item}
-                        />
-                      </ListItem>
-                    </>
-                  ))}
-              </List>
-            </Grid>
-            <Grid>
-              <List
-                  sx={{
-                      width: '100%',
-                      maxWidth: 360,
-                      bgcolor: 'background.paper',
-                  }}
-                  >
-                  {RideMetadata2.map((item) => (
-                    <>
-                      <ListItem>
-                        <ListItemAvatar>
-                        <Avatar>
-                          <ImageIcon />
-                        </Avatar>
-                        </ListItemAvatar>
-                        <BasicFormControl 
-                          inputDict={inputDict}
-                          setInputDict={setInputDict}
-                          type={item}
-                        />
-                      </ListItem>
-                    </>
-                  ))}
+              <List>
+                  <ListItem>
+                    <ListItemAvatar>
+                    <Avatar>
+                      <ImageIcon />
+                    </Avatar>
+                    </ListItemAvatar>
+                    <BasicFormControl 
+                      inputDict={inputDict}
+                      setInputDict={setInputDict}
+                      type='price'
+                    />
+                  </ListItem>
               </List>
             </Grid>
         </Grid>
