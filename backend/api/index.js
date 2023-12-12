@@ -159,10 +159,14 @@ const search = async (req, res) => {
             arr_idx = rideshare.schedule.findIndex((s) => s.stop === arrival);
 
         // Too Late
-        if (rideshare.schedule[dep_idx].hour < hour || 
-            rideshare.schedule[dep_idx].minute < minute) return false;
-        
-        console.log(rideshare.no);
+        const schedule = rideshare.schedule;
+        if (schedule[dep_idx].hour * 60 +  schedule[dep_idx].minute <
+                hour * 60 + minute) {
+            return false;
+        }
+
+        if (arr_idx <= dep_idx)
+            return false;
         // Full
         for (let idx = dep_idx; idx <= arr_idx; idx++) {
             if (rideshare.capacity === rideshare.schedule[idx].volume)
