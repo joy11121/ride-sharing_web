@@ -62,7 +62,7 @@ const Small = styled('small')(({ bgcolor }) => ({
   boxShadow: '0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24)',
 }));
 
-const QueryTable = () => {
+const QueryTable = ({timeValue}) => {
   const { palette } = useTheme();
   const bgError = palette.error.main;
   const bgPrimary = palette.primary.main;
@@ -79,9 +79,10 @@ const QueryTable = () => {
 
   //Data
   const [rides, setRides] = useState([]);
+  const [dep, setDep] = useState('A');
+  const [arr, setArr] = useState('B');
+  
   const id = '0001';
-  const dep = 'A';
-  const arr = 'B';
   const year = 2023, month = 12, day = 12;
 
   const handleChangePage = (_, newPage) => {
@@ -101,14 +102,17 @@ const QueryTable = () => {
 
 
   useEffect(() => {
+    console.log(timeValue.$y, timeValue.$M, timeValue.$D,
+      timeValue.$H, timeValue.$m)
     const search = async() =>{
       const {data} = await instance.get('/search', {params: {
-        year, month, day, hour:0, minute:0, departure:dep, arrival:arr
+        year:timeValue.$y, month:timeValue.$M, day:timeValue.$D,
+        hour:timeValue.$H, minute:timeValue.$m, departure:dep, arrival:arr
       }});
       setRides(data);
     };
     search(); 
-  }, []);
+  }, [timeValue]);
 
   return (
       <>

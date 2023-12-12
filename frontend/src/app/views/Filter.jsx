@@ -9,16 +9,14 @@ import {
 import ClearIcon from '@mui/icons-material/Clear';
 import FilterItem from "./FilterItem";
 import { useState, useEffect } from "react";
+import MyTimePicker from './MyTimePicker'
 
-const typeList = ['Car', 'Taxi', 'Airplane', 'Motorcycle']
-const locationList = Array(10).fill('Taipei');
+const locationList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
-const Filter = () => {
-    const [types, setTypes] = useState([]);
+const Filter = ({value, setValue}) => {
     const [locations, setLocations] = useState([]);
 
     const resetTypes = () => {
-        setTypes(typeList.map((item) => ({name: item, checked: false})));
         setLocations(locationList.map((item) => ({name: item, checked: false})))
     }
 
@@ -28,7 +26,7 @@ const Filter = () => {
 
     return (
         <Grid> 
-            <Divider textAlign="left">
+            {/* <Divider textAlign="left">
                 <Chip label="FILTER BY" />
             </Divider>
             <Box sx={{ display: 'flex', gap: 1, fontFamily: 'Consolas' }} margin={1}>
@@ -39,28 +37,15 @@ const Filter = () => {
                     Clear All
                 </Button>
             </Box>
-            <br/>
-            <Divider textAlign="left">
-                <Chip label="ARRIVAL TIME" />
-            </Divider>
-            <br/>
-
-            <Divider textAlign="left">
-                <Chip label="TRAFFIC WAY" />
-            </Divider>
-            <Grid container spacing={1} margin={1}>
-                {types.map((item, index) => 
-                    <Grid item>
-                        <FilterItem items={types} index={index} setItems={setTypes}>
-                            {item.name}
-                        </FilterItem>
-                    </Grid>
-                )}
-            </Grid>
+            <br/> */}
+            <MyTimePicker
+                value={value}
+                setValue={setValue}
+            />
             <br/>
 
             <Divider textAlign="left">
-                <Chip label="LOCATION" />
+                <Chip label="我的位置" />
             </Divider>
             <Grid container spacing={1} margin={1}>
                 {locations.map((item, index) => 

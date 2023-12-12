@@ -121,22 +121,24 @@ const Layout1Topbar = () => {
           </Typography>
 
           <IconBox>
-            <StyledIconButton>
+            {/* <StyledIconButton>
               <Icon>mail_outline</Icon>
             </StyledIconButton>
 
             <StyledIconButton>
               <Icon>star_outline</Icon>
-            </StyledIconButton>
+            </StyledIconButton> */}
 
-            <MyRides type='query'/>
-            <MyRides type='post'/>
+            {/* <MyRides type='query'/>
+            <MyRides type='post'/> */}
 
           </IconBox>
         </Box>
 
         <Box display="flex" alignItems="center">
           <MatxSearchBox />
+          <MyRides type='query'/>
+          <MyRides type='post'/>
 
           <NotificationProvider>
             <NotificationBar />

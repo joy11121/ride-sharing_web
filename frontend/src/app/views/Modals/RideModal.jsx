@@ -59,7 +59,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          司機： {ride.drv_id}
+          Hi, Jimmy ! 準備加入新行程？
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -88,6 +88,17 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
                     bgcolor: 'background.paper',
                 }}
                 >
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <ImageIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText 
+                    primary="司機名稱"
+                    secondary={ride.drv_name} 
+                  />
+                </ListItem>
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>

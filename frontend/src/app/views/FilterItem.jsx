@@ -8,7 +8,7 @@ import { useState } from "react";
 export default function FilterItem({items, index, setItems}) {
   const handleClick = () => {
     setItems((prev) => {
-      const newItems = [...prev];
+      const newItems = prev.map((item) => ({name: item.name, checked: false}));
       newItems[index].checked = !prev[index].checked;
       return newItems;
     })

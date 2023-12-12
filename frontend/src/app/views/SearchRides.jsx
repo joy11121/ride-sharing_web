@@ -2,6 +2,9 @@ import { Card, Grid, styled, useTheme } from '@mui/material';
 import { Fragment } from 'react';
 import QueryTable from './QueryTable';
 import Filter from './Filter';
+import { useState } from 'react';
+
+import dayjs from 'dayjs';
 
 const ContentBox = styled('div')(({ theme }) => ({
   margin: '30px',
@@ -20,6 +23,7 @@ const Container = styled("div")(({ theme }) => ({
 
 const SearchRides = () => {
   const { palette } = useTheme();
+  const [timeValue, setTimeValue] = useState(dayjs());
 
   return (
     <Fragment>
@@ -27,10 +31,13 @@ const SearchRides = () => {
         <Grid container spacing={2}>
           <Container>
             <Grid item xs={3.5}  >
-              <Filter />
+              <Filter 
+                value={timeValue}
+                setValue={setTimeValue}
+              />
             </Grid>
             <Grid  item xs={12} marginLeft={5}>
-              <QueryTable />
+              <QueryTable timeValue={timeValue}/>
             </Grid>
           </Container>
         </Grid>
