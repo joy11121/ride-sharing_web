@@ -65,10 +65,10 @@ const rideshare = [
         price: 10000,
 
         schedule:[
-            {stop: 'A', hour: 10, minute: 10},
-            {stop: 'B', hour: 10, minute: 20},
-            {stop: 'C', hour: 10, minute: 30},
-            {stop: 'D', hour: 10, minute: 50},
+            {stop: 'A', hour: 22, minute: 10},
+            {stop: 'B', hour: 22, minute: 20},
+            {stop: 'C', hour: 22, minute: 30},
+            {stop: 'D', hour: 22, minute: 50},
         ]
     }
 ]

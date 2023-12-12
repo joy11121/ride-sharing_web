@@ -102,11 +102,12 @@ const QueryTable = ({timeValue}) => {
 
 
   useEffect(() => {
-    console.log(timeValue.$y, timeValue.$M, timeValue.$D,
+    console.log(timeValue)
+    console.log(timeValue.$y, timeValue.$M + 1, timeValue.$D,
       timeValue.$H, timeValue.$m)
     const search = async() =>{
       const {data} = await instance.get('/search', {params: {
-        year:timeValue.$y, month:timeValue.$M, day:timeValue.$D,
+        year:timeValue.$y, month:timeValue.$M + 1, day:timeValue.$D,
         hour:timeValue.$H, minute:timeValue.$m, departure:dep, arrival:arr
       }});
       setRides(data);
