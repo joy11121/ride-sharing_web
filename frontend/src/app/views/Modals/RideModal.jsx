@@ -19,7 +19,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import StarsIcon from '@mui/icons-material/Stars';
 
 import instance from 'api';
-import LeafletMap from '../LeafletMap';
+import QueryMap from '../Maps/QueryMap';
 
 // import data from 'app/data';
 
@@ -83,7 +83,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
         }}
         >
             <Grid item>
-              <LeafletMap />
+              <QueryMap />
             </Grid>
             <Grid item>   
             <List

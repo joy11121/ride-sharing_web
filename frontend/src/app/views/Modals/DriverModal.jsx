@@ -13,14 +13,20 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
+import ListSubheader from '@mui/material/ListSubheader';
+
+
 import ImageIcon from '@mui/icons-material/Image';
 import ReduceCapacityIcon from '@mui/icons-material/ReduceCapacity';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import BasicFormControl from './BasicFormControl';
 
 import instance from 'api';
-import LeafletMap from '../LeafletMap';
+import LeafletMap from '../Maps/PostMap';
+import { useEffect } from 'react';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -31,52 +37,58 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const id = '0001';
+const id = '0002';
 
 
 export default function DriverModal({open, setOpen}) {
 
-    const [inputDict, setInputDict] = useState({drv_id: id, schedule:[
-      // {stop: 'A', hour: 10, minute: 10},
-      // {stop: 'B', hour: 10, minute: 20},
-      // {stop: 'C', hour: 10, minute: 30},
-      // {stop: 'D', hour: 10, minute: 50},
-      // {stop: 'A', hour: 11, minute: 10},
-      // {stop: 'B', hour: 11, minute: 20},
-      // {stop: 'C', hour: 11, minute: 30},
-      // {stop: 'D', hour: 11, minute: 50},
-    ]});
+    const [inputDict, setInputDict] = useState({drv_id: id});
+    const [schedule, setSchedule] = useState([]);
+    const [canSend, setCanSend] = useState(false);
+
+    // For Leaflet draw lines
+    const [lats, setLats] = useState([]);
 
     const handleClose = () => {
         setOpen(false);
+        setSchedule([]);
+        setInputDict({drv_id: id});
+        setLats([]);
     };
 
     const handleAddRide = () => {
-        const host = async() =>{
-          const {data} = await instance.post('/host', inputDict);
-          return data;
-        }
         setOpen(false);
-        host();
-        setInputDict({drv_id: id, 
-          // schedule:[
-          //   {stop: 'A', hour: 10, minute: 10},
-          //   {stop: 'B', hour: 10, minute: 20},
-          //   {stop: 'C', hour: 10, minute: 30},
-          //   {stop: 'D', hour: 10, minute: 50},
-          //   {stop: 'A', hour: 11, minute: 10},
-          //   {stop: 'B', hour: 11, minute: 20},
-          //   {stop: 'C', hour: 11, minute: 30},
-          //   {stop: 'D', hour: 11, minute: 50},
-          // ]
+        setInputDict(prev => {
+          prev.schedule = schedule; 
+          return prev;
         });
+        setCanSend(true);
     }
+
+    useEffect(() => {
+      const host = async() =>{
+        const {data} = await instance.post('/host', inputDict);
+        return data;
+      }
+      if(canSend === true){
+        console.log(inputDict);
+        host();
+        setCanSend(false);
+        handleClose();
+      }
+    }, [canSend]);
 
     // const {
     //     price,
     //     drv_id,
     //     schedule,   // stop, hour, minute
     // } = req.body;
+    function checkTime(i) {
+      if (i < 10) {
+        i = "0" + i;
+      }
+      return i;
+    }
 
   return (
     <Fragment>
@@ -84,12 +96,12 @@ export default function DriverModal({open, setOpen}) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         fullWidth
-        maxWidth='md'
+        maxWidth='lg'
         open={open}
       >
        
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          輸入駕駛資訊
+          點選行程中間點，並輸入駕駛資訊：
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -109,7 +121,10 @@ export default function DriverModal({open, setOpen}) {
         >
             <Grid item> 
               <LeafletMap
-                setInputDict={setInputDict}
+                schedule={schedule}
+                setSchedule={setSchedule}
+                lats={lats}
+                setLats={setLats}
               />
             </Grid>
             <Grid item>   
@@ -138,20 +153,38 @@ export default function DriverModal({open, setOpen}) {
                       type='capacity'
                     />
                   </ListItem>
-                  {inputDict.schedule.map((item, idx) => {
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <ImageIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText 
-                        primary={"我的行程" + idx + ':' + item.stop}
-                        secondary={item.hour + ':' + item.minute} 
-                      />
-                    </ListItem>
-                  })}
-                  
+              </List>
+            </Grid>   
+              
+            <Grid item>   
+              <List
+                subheader={
+                  schedule.length ? 
+                  <ListSubheader component="div" id="nested-list-subheader">
+                    預計行程
+                  </ListSubheader>
+                  : ""
+                }
+              >
+                {schedule.map((item, idx) =>
+                  <ListItem
+                    secondaryAction={
+                      <IconButton edge="end" aria-label="delete">
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <FolderIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary={"我的行程" + idx + ':' + item.stop}
+                      secondary={checkTime(item.hour) + ':' + checkTime(item.minute)} 
+                    />
+                  </ListItem>
+                )} 
               </List>
             </Grid>
         </Grid>

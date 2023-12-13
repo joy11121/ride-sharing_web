@@ -23,6 +23,17 @@ import { useEffect } from "react";
 import RideModal from "./Modals/RideModal";
 
 import instance from "api";
+import { useContext } from "react";
+import UserContext from "app/contexts/UserContext";
+
+import img1 from './faces/2.jpg';
+import img2 from './faces/3.jpg';
+import img3 from './faces/4.jpg';
+import img4 from './faces/5.jpg';
+import img5 from './faces/9.jpg';
+import img6 from './faces/10.jpg';
+import img7 from './faces/12.jpg';
+const imglist = [img1, img2, img3, img4, img5, img6, img7];
 
 const drivers = [
   {
@@ -62,7 +73,7 @@ const Small = styled('small')(({ bgcolor }) => ({
   boxShadow: '0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24)',
 }));
 
-const QueryTable = ({timeValue, myPos, myDest}) => {
+const QueryTable = () => {
   const { palette } = useTheme();
   const bgError = palette.error.main;
   const bgPrimary = palette.primary.main;
@@ -79,6 +90,7 @@ const QueryTable = ({timeValue, myPos, myDest}) => {
 
   //Data
   const [rides, setRides] = useState([]);
+  const {timeValue, myPos, myDest} = useContext(UserContext);
   
   const id = '0002';
 
@@ -111,6 +123,13 @@ const QueryTable = ({timeValue, myPos, myDest}) => {
     };
     search(); 
   }, [timeValue, myPos, myDest]);
+
+  function checkTime(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
 
   return (
       <>
@@ -155,12 +174,16 @@ const QueryTable = ({timeValue, myPos, myDest}) => {
                   <TableRow key={index}>
                     <TableCell colSpan={1.5} align="left" sx={{ px: 0, textTransform: 'capitalize' }}>
                       <Box display="flex" alignItems="center">
-                        <Avatar src={ride.imgUrl} />
+                        <Avatar src={imglist[index % imglist.length]} />
                         <Paragraph sx={{ m: 0, ml: 4 }}>{ride.drv_id}</Paragraph>
                       </Box>
                     </TableCell>
-                    <TableCell colSpan={1.5}>{ride.dep_hour + ':' + ride.dep_minute}</TableCell>
-                    <TableCell colSpan={1.5}>{ride.arr_hour + ':' + ride.arr_minute}</TableCell>
+                    <TableCell colSpan={1.5}>
+                      {checkTime(ride.dep_hour) + ':' + checkTime(ride.dep_minute)}
+                    </TableCell>
+                    <TableCell colSpan={1.5}>
+                      {checkTime(ride.arr_hour) + ':' + checkTime(ride.arr_minute)}
+                    </TableCell>
                     <TableCell colSpan={1}>
                       <Rating name="read-only" value={ride.rate} readOnly />
                     </TableCell>

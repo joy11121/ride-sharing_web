@@ -140,9 +140,9 @@ const Layout1Topbar = () => {
           <MyRides type='query'/>
           <MyRides type='post'/>
 
-          <NotificationProvider>
+          {/* <NotificationProvider>
             <NotificationBar />
-          </NotificationProvider>
+          </NotificationProvider> */}
 
           
 
@@ -172,10 +172,10 @@ const Layout1Topbar = () => {
               </Link>
             </StyledItem>
 
-            <StyledItem>
+            {/* <StyledItem>
               <Icon> settings </Icon>
               <Span> Settings </Span>
-            </StyledItem>
+            </StyledItem> */}
 
             <StyledItem>
               <Link to="/login" onClick={handleLogout}>

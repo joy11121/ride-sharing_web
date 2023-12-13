@@ -65,6 +65,7 @@ const host = async (req, res) => {
         drv_id,
         schedule,   // stop, hour, minute
     } = req.body;
+    console.log(req.body)
     req.body.no = uuidv4();
     // req.body.no = drv_id;
 

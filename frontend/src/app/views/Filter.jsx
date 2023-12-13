@@ -10,16 +10,21 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FilterItem from "./FilterItem";
 import { useState, useEffect } from "react";
 import MyTimePicker from './MyTimePicker'
+import { useContext } from "react";
+import UserContext from "app/contexts/UserContext";
 
-const locationList = ['A', 'B', 'C', 'D', 'E', 'F'];
+import positionList from "./Maps/PositionList";
 
-const Filter = ({value, setValue, setMyPos, setMyDest}) => {
+const Filter = () => {
+
+    const {timeValue, setTimeValue, setMyPos, setMyDest} = useContext(UserContext);
+
     const [locations1, setLocations1] = useState([]);
     const [locations2, setLocations2] = useState([]);
 
     const resetTypes = () => {
-        setLocations1(locationList.map((item) => ({name: item, checked: false})));
-        setLocations2(locationList.map((item) => ({name: item, checked: false})))
+        setLocations1(positionList.map((item) => ({name: item[2], checked: false})));
+        setLocations2(positionList.map((item) => ({name: item[2], checked: false})))
     }
 
     useEffect(() => {
@@ -28,21 +33,9 @@ const Filter = ({value, setValue, setMyPos, setMyDest}) => {
 
     return (
         <Grid> 
-            {/* <Divider textAlign="left">
-                <Chip label="FILTER BY" />
-            </Divider>
-            <Box sx={{ display: 'flex', gap: 1, fontFamily: 'Consolas' }} margin={1}>
-                <Button size="sm" variant="soft" color="danger"
-                    onClick={resetTypes}
-                >
-                    <ClearIcon/>
-                    Clear All
-                </Button>
-            </Box>
-            <br/> */}
             <MyTimePicker
-                value={value}
-                setValue={setValue}
+                value={timeValue}
+                setValue={setTimeValue}
             />
             <br/>
 

@@ -5,6 +5,10 @@ import { styled } from '@mui/system';
 import clsx from 'clsx';
 
 export default function BasicFormControl({inputDict, setInputDict, type}) {
+  const nameDict = {
+    "price": "價格",
+    "capacity": "載客容量",
+  }
   const handleInput = (e) => {
     setInputDict(prev => {
       prev[type] = e.target.value;
@@ -13,10 +17,10 @@ export default function BasicFormControl({inputDict, setInputDict, type}) {
   }
   return (
     <FormControl defaultValue="" required>
-      <Label>{type.toUpperCase()}</Label>
+      <Label>{nameDict[type]}</Label>
       <StyledInput 
         onChange={handleInput} 
-        placeholder={"Please enter the "+type} 
+        placeholder={"請輸入"+nameDict[type]} 
       />
       <HelperText />
     </FormControl>

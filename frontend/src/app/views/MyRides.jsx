@@ -7,7 +7,7 @@ import { themeShadows } from 'app/components/MatxTheme/themeColors';
 import { topBarHeight } from 'app/utils/constant';
 import { useContext } from 'react';
 import QueryContext from 'app/contexts/QueryContext';
-import PostContext from 'app/contexts/PostContext';
+import PostContext from 'app/contexts/UserContext';
 import ChatHead from './Chatbox/ChatHead';
 import Chatbox from './Chatbox/Chatbox';
 import CommuteIcon from '@mui/icons-material/Commute';
@@ -71,9 +71,7 @@ const ProductDetails = styled(Box)({
 function MyRides({ container, type }) {
   const { settings } = useSettings();
   const [panelOpen, setPanelOpen] = useState(false);
-  const {cardList, setCardList} = useContext(
-    type === 'query' ? QueryContext : PostContext
-  );
+  const cardList = [];
 
   const [rides, setRides] = useState([]);
 

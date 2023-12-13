@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import dayjs from 'dayjs';
 
 const user = [
     {
@@ -40,35 +41,62 @@ const user = [
     }, 
 ];
 
+const {$y, $M, $D, $H, $m} = dayjs(); 
+const positionList = [
+    [24.779046663607577, 120.99319338810972, '台積電7廠'],
+    [24.797820970001588, 120.9965950914603, '清華大學'],
+    [24.827501310697876, 120.91150582121116, '廢物媽媽育兒農場'],
+    [24.817616, 121.025921, '六家庄'],
+    [24.821205, 121.181797, '六福村'],
+    [24.705444, 121.182472, '內灣車站'],
+    [24.800222, 120.978194, '新竹孔廟'],
+];
+
 const rideshare = [
     {
-        year: 2023,
-        month: 12,
-        day: 12,
+        year: $y,
+        month: $M + 1,
+        day: $D,
         drv_id: '0000',
         veh_no: '0000',
         capacity: 3,
         price: 900,
 
         schedule:[
-            {stop: 'A', hour: 10, minute: 0},
-            {stop: 'C', hour: 10, minute: 10},
-            {stop: 'E', hour: 10, minute: 30},
+            {stop: positionList[0][2], hour: 23, minute: 0},
+            {stop: positionList[1][2], hour: 23, minute: 10},
+            {stop: positionList[2][2], hour: 23, minute: 30},
         ]
     }, {
-        year: 2023,
-        month: 12,
-        day: 13,
+        year: $y,
+        month: $M + 1,
+        day: $D,
         drv_id: '0001',
         vehicle: '0001',
         capacity: 6,
         price: 10000,
 
         schedule:[
-            {stop: 'A', hour: 22, minute: 10},
-            {stop: 'B', hour: 22, minute: 20},
-            {stop: 'C', hour: 22, minute: 30},
-            {stop: 'D', hour: 22, minute: 50},
+            {stop: positionList[0][2], hour: 23, minute: 10},
+            {stop: positionList[2][2], hour: 23, minute: 20},
+            {stop: positionList[3][2], hour: 23, minute: 30},
+            {stop: positionList[5][2], hour: 23, minute: 50},
+        ]
+    },
+    {
+        year: $y,
+        month: $M + 1,
+        day: $D,
+        drv_id: '0001',
+        vehicle: '0001',
+        capacity: 6,
+        price: 10000,
+
+        schedule:[
+            {stop: positionList[0][2], hour: 23, minute: 10},
+            {stop: positionList[1][2], hour: 23, minute: 20},
+            {stop: positionList[4][2], hour: 23, minute: 30},
+            {stop: positionList[6][2], hour: 23, minute: 50},
         ]
     }
 ]

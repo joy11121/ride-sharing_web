@@ -4,8 +4,6 @@ import QueryTable from './QueryTable';
 import Filter from './Filter';
 import { useState } from 'react';
 
-import dayjs from 'dayjs';
-
 const ContentBox = styled('div')(({ theme }) => ({
   margin: '30px',
   [theme.breakpoints.down('sm')]: { margin: '16px' },
@@ -23,29 +21,16 @@ const Container = styled("div")(({ theme }) => ({
 
 const SearchRides = () => {
   const { palette } = useTheme();
-  const [timeValue, setTimeValue] = useState(dayjs());
-  const [myPos, setMyPos] = useState("");
-  const [myDest, setMyDest] = useState("");
-
   return (
     <Fragment>
       <ContentBox >
         <Grid container spacing={2}>
           <Container>
-            <Grid item xs={3.5}  >
-              <Filter 
-                value={timeValue}
-                setValue={setTimeValue}
-                setMyPos={setMyPos}
-                setMyDest={setMyDest}
-              />
+            <Grid item xs={4}  >
+              <Filter />
             </Grid>
             <Grid  item xs={12} marginLeft={5}>
-              <QueryTable 
-                timeValue={timeValue}
-                myPos={myPos}
-                myDest={myDest}
-              />
+              <QueryTable />
             </Grid>
           </Container>
         </Grid>

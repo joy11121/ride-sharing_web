@@ -4,21 +4,21 @@ import { MatxTheme } from './components';
 import { SettingsProvider } from './contexts/SettingsContext';
 import routes from './routes';
 import { QueryProvider } from './contexts/QueryContext';
-import { PostProvider } from './contexts/PostContext';
+import { UserProvider } from './contexts/UserContext';
 
 const App = () => {
   const content = useRoutes(routes);
 
   return (
     <QueryProvider>
-      <PostProvider>
+      <UserProvider>
         <SettingsProvider>
             <MatxTheme>
               <CssBaseline />
               {content} 
             </MatxTheme>
         </SettingsProvider>
-      </PostProvider>
+      </UserProvider>
     </QueryProvider>
     
   );
