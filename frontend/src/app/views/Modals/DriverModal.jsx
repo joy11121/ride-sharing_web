@@ -11,29 +11,16 @@ import { Grid } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import ImageIcon from '@mui/icons-material/Image';
+import ReduceCapacityIcon from '@mui/icons-material/ReduceCapacity';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
-
-import img from './room-6.jpg'
 import BasicFormControl from './BasicFormControl';
 
 import instance from 'api';
-
-const RideMetadata1 = [
-  'name',
-  'start',
-  'destination',
-  'startTime',
-  'endTime',
-  
-]
-const RideMetadata2 = [
-  'passby',
-  'price',
-  'capacity',
-]
-
+import LeafletMap from '../LeafletMap';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -46,17 +33,18 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const id = '0001';
 
+
 export default function DriverModal({open, setOpen}) {
 
     const [inputDict, setInputDict] = useState({drv_id: id, schedule:[
-      {stop: 'A', hour: 10, minute: 10},
-      {stop: 'B', hour: 10, minute: 20},
-      {stop: 'C', hour: 10, minute: 30},
-      {stop: 'D', hour: 10, minute: 50},
-      {stop: 'A', hour: 11, minute: 10},
-      {stop: 'B', hour: 11, minute: 20},
-      {stop: 'C', hour: 11, minute: 30},
-      {stop: 'D', hour: 11, minute: 50},
+      // {stop: 'A', hour: 10, minute: 10},
+      // {stop: 'B', hour: 10, minute: 20},
+      // {stop: 'C', hour: 10, minute: 30},
+      // {stop: 'D', hour: 10, minute: 50},
+      // {stop: 'A', hour: 11, minute: 10},
+      // {stop: 'B', hour: 11, minute: 20},
+      // {stop: 'C', hour: 11, minute: 30},
+      // {stop: 'D', hour: 11, minute: 50},
     ]});
 
     const handleClose = () => {
@@ -71,16 +59,16 @@ export default function DriverModal({open, setOpen}) {
         setOpen(false);
         host();
         setInputDict({drv_id: id, 
-          schedule:[
-            {stop: 'A', hour: 10, minute: 10},
-            {stop: 'B', hour: 10, minute: 20},
-            {stop: 'C', hour: 10, minute: 30},
-            {stop: 'D', hour: 10, minute: 50},
-            {stop: 'A', hour: 11, minute: 10},
-            {stop: 'B', hour: 11, minute: 20},
-            {stop: 'C', hour: 11, minute: 30},
-            {stop: 'D', hour: 11, minute: 50},
-          ]
+          // schedule:[
+          //   {stop: 'A', hour: 10, minute: 10},
+          //   {stop: 'B', hour: 10, minute: 20},
+          //   {stop: 'C', hour: 10, minute: 30},
+          //   {stop: 'D', hour: 10, minute: 50},
+          //   {stop: 'A', hour: 11, minute: 10},
+          //   {stop: 'B', hour: 11, minute: 20},
+          //   {stop: 'C', hour: 11, minute: 30},
+          //   {stop: 'D', hour: 11, minute: 50},
+          // ]
         });
     }
 
@@ -96,9 +84,10 @@ export default function DriverModal({open, setOpen}) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         fullWidth
-        maxWidth='lg'
+        maxWidth='md'
         open={open}
       >
+       
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           輸入駕駛資訊
         </DialogTitle>
@@ -118,15 +107,17 @@ export default function DriverModal({open, setOpen}) {
             sx={{display: 'flex', justifyContent: 'center', alignItems: 'center',
         }}
         >
-            <Grid item>
-                <img src={img}/>
+            <Grid item> 
+              <LeafletMap
+                setInputDict={setInputDict}
+              />
             </Grid>
             <Grid item>   
               <List>
                   <ListItem>
                     <ListItemAvatar>
                     <Avatar>
-                      <ImageIcon />
+                      <AttachMoneyIcon />
                     </Avatar>
                     </ListItemAvatar>
                     <BasicFormControl 
@@ -135,6 +126,32 @@ export default function DriverModal({open, setOpen}) {
                       type='price'
                     />
                   </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                    <Avatar>
+                      <ReduceCapacityIcon />
+                    </Avatar>
+                    </ListItemAvatar>
+                    <BasicFormControl 
+                      inputDict={inputDict}
+                      setInputDict={setInputDict}
+                      type='capacity'
+                    />
+                  </ListItem>
+                  {inputDict.schedule.map((item, idx) => {
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <ImageIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText 
+                        primary={"我的行程" + idx + ':' + item.stop}
+                        secondary={item.hour + ':' + item.minute} 
+                      />
+                    </ListItem>
+                  })}
+                  
               </List>
             </Grid>
         </Grid>

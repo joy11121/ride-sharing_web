@@ -62,7 +62,7 @@ const Small = styled('small')(({ bgcolor }) => ({
   boxShadow: '0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24)',
 }));
 
-const QueryTable = ({timeValue}) => {
+const QueryTable = ({timeValue, myPos, myDest}) => {
   const { palette } = useTheme();
   const bgError = palette.error.main;
   const bgPrimary = palette.primary.main;
@@ -79,11 +79,8 @@ const QueryTable = ({timeValue}) => {
 
   //Data
   const [rides, setRides] = useState([]);
-  const [dep, setDep] = useState('A');
-  const [arr, setArr] = useState('B');
   
-  const id = '0001';
-  const year = 2023, month = 12, day = 12;
+  const id = '0002';
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -102,18 +99,18 @@ const QueryTable = ({timeValue}) => {
 
 
   useEffect(() => {
-    console.log(timeValue)
-    console.log(timeValue.$y, timeValue.$M + 1, timeValue.$D,
-      timeValue.$H, timeValue.$m)
+    // console.log(timeValue)
+    // console.log(timeValue.$y, timeValue.$M + 1, timeValue.$D,
+    //   timeValue.$H, timeValue.$m)
     const search = async() =>{
       const {data} = await instance.get('/search', {params: {
         year:timeValue.$y, month:timeValue.$M + 1, day:timeValue.$D,
-        hour:timeValue.$H, minute:timeValue.$m, departure:dep, arrival:arr
+        hour:timeValue.$H, minute:timeValue.$m, departure:myPos, arrival:myDest
       }});
       setRides(data);
     };
     search(); 
-  }, [timeValue]);
+  }, [timeValue, myPos, myDest]);
 
   return (
       <>
@@ -121,8 +118,8 @@ const QueryTable = ({timeValue}) => {
         open={modalOpen}
         setOpen={setModalOpen}
         ride={modalRide}
-        dep={dep}
-        arr={arr}
+        dep={myPos}
+        arr={myDest}
         id={id}
       />
       <Box width="100%" overflow="auto">
@@ -139,9 +136,6 @@ const QueryTable = ({timeValue}) => {
                 <TableCell sx={{ px: 0 }} colSpan={1.5}>
                     抵達時間
                 </TableCell>
-                {/* <TableCell sx={{ px: 0 }} colSpan={1}>
-                    已搭乘人數/容量
-                </TableCell> */}
                 <TableCell sx={{ px: 0 }} colSpan={1}>
                     駕駛評價
                 </TableCell>

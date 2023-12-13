@@ -11,13 +11,15 @@ import FilterItem from "./FilterItem";
 import { useState, useEffect } from "react";
 import MyTimePicker from './MyTimePicker'
 
-const locationList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+const locationList = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-const Filter = ({value, setValue}) => {
-    const [locations, setLocations] = useState([]);
+const Filter = ({value, setValue, setMyPos, setMyDest}) => {
+    const [locations1, setLocations1] = useState([]);
+    const [locations2, setLocations2] = useState([]);
 
     const resetTypes = () => {
-        setLocations(locationList.map((item) => ({name: item, checked: false})))
+        setLocations1(locationList.map((item) => ({name: item, checked: false})));
+        setLocations2(locationList.map((item) => ({name: item, checked: false})))
     }
 
     useEffect(() => {
@@ -48,9 +50,32 @@ const Filter = ({value, setValue}) => {
                 <Chip label="我的位置" />
             </Divider>
             <Grid container spacing={1} margin={1}>
-                {locations.map((item, index) => 
+                {locations1.map((item, index) => 
                     <Grid item>
-                        <FilterItem items={locations} index={index} setItems={setLocations} >
+                        <FilterItem 
+                            items={locations1} 
+                            index={index} 
+                            setItems={setLocations1} 
+                            setMyPos={setMyPos}
+                        >
+                            {item.name}
+                        </FilterItem>
+                    </Grid>  
+                )}
+            </Grid>
+
+            <Divider textAlign="left">
+                <Chip label="我的目的地" />
+            </Divider>
+            <Grid container spacing={1} margin={1}>
+                {locations2.map((item, index) => 
+                    <Grid item>
+                        <FilterItem 
+                            items={locations2} 
+                            index={index} 
+                            setItems={setLocations2} 
+                            setMyPos={setMyDest}
+                        >
                             {item.name}
                         </FilterItem>
                     </Grid>  

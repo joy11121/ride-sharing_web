@@ -5,8 +5,9 @@ import {
 
 import { useState } from "react";
 
-export default function FilterItem({items, index, setItems}) {
+export default function FilterItem({items, index, setItems, setMyPos}) {
   const handleClick = () => {
+    setMyPos(items[index].name);
     setItems((prev) => {
       const newItems = prev.map((item) => ({name: item.name, checked: false}));
       newItems[index].checked = !prev[index].checked;

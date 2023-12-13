@@ -16,7 +16,7 @@ export default function BasicFormControl({inputDict, setInputDict, type}) {
       <Label>{type.toUpperCase()}</Label>
       <StyledInput 
         onChange={handleInput} 
-        placeholder={"Please enter your "+type} 
+        placeholder={"Please enter the "+type} 
       />
       <HelperText />
     </FormControl>

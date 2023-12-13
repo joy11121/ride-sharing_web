@@ -58,7 +58,7 @@ const rideshare = [
     }, {
         year: 2023,
         month: 12,
-        day: 12,
+        day: 13,
         drv_id: '0001',
         vehicle: '0001',
         capacity: 6,

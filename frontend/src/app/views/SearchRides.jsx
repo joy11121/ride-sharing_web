@@ -24,6 +24,8 @@ const Container = styled("div")(({ theme }) => ({
 const SearchRides = () => {
   const { palette } = useTheme();
   const [timeValue, setTimeValue] = useState(dayjs());
+  const [myPos, setMyPos] = useState("");
+  const [myDest, setMyDest] = useState("");
 
   return (
     <Fragment>
@@ -34,10 +36,16 @@ const SearchRides = () => {
               <Filter 
                 value={timeValue}
                 setValue={setTimeValue}
+                setMyPos={setMyPos}
+                setMyDest={setMyDest}
               />
             </Grid>
             <Grid  item xs={12} marginLeft={5}>
-              <QueryTable timeValue={timeValue}/>
+              <QueryTable 
+                timeValue={timeValue}
+                myPos={myPos}
+                myDest={myDest}
+              />
             </Grid>
           </Container>
         </Grid>

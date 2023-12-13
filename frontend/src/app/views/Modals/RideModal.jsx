@@ -15,8 +15,13 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import ImageIcon from '@mui/icons-material/Image';
 
-import img from './room-6.jpg'
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import StarsIcon from '@mui/icons-material/Stars';
+
 import instance from 'api';
+import LeafletMap from '../LeafletMap';
+
+// import data from 'app/data';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -29,25 +34,25 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export default function RideModal({open, setOpen, ride, dep, arr, id}) {
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+  const handleClose = () => {
+      setOpen(false);
+  };
 
-    const handleJoin = async () => {
-        setOpen(false);
-        const { data } = await instance.post('/reserve', 
-          {no: ride.no, pax_id: id, dep, arr}
-        );
-    }
+  const handleJoin = async () => {
+      setOpen(false);
+      const { data } = await instance.post('/reserve', 
+        {no: ride.no, pax_id: id, dep, arr}
+      );
+  }
 
-    // no
-    // drv_id
-    // dep_hour
-    // dep_minute
-    // arr_hour
-    // arr_minute
-    // fare:
-    // rating:
+  // no
+  // drv_id
+  // dep_hour
+  // dep_minute
+  // arr_hour
+  // arr_minute
+  // fare:
+  // rating:
 
   return (
     <Fragment>
@@ -78,7 +83,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
         }}
         >
             <Grid item>
-                <img src={img}/>
+              <LeafletMap />
             </Grid>
             <Grid item>   
             <List
@@ -124,7 +129,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
-                      <ImageIcon />
+                      <AttachMoneyIcon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText 
@@ -135,7 +140,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
-                      <ImageIcon />
+                      <StarsIcon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText 
