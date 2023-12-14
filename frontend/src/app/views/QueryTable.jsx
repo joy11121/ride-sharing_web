@@ -121,7 +121,8 @@ const QueryTable = () => {
       setRides(data);
     };
     search(); 
-    console.log("id: ", id);
+    console.log(rides);
+
   }, [timeValue, myPos, myDest]);
 
   function checkTime(i) {

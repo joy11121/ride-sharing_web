@@ -49,6 +49,7 @@ export default function LeafletMap({schedule, setSchedule, lats, setLats}) {
     rMachine.current?.setWaypoints(lats);
   }, [lats]);
 
+
   return (
     <MapContainer center={center} zoom={10.5} 
       scrollWheelZoom={false} 

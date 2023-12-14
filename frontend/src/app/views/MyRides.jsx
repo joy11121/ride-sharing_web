@@ -18,6 +18,7 @@ import Tooltip from '@mui/material/Tooltip';
 import BasicRating from './rateItem';
 
 import instance from 'api';
+import UserContext from 'app/contexts/UserContext';
 
 
 // styled components
@@ -74,20 +75,22 @@ function MyRides({ container, type }) {
   const cardList = [];
 
   const [rides, setRides] = useState([]);
+  const {id} = useContext(UserContext);
 
   const handleDrawerToggle = async () => {
     // Todo: get history
     const queryRsv = async() =>{
-      const {data: {rsv_hist}} = await instance.get('/query', {params: {
-        id: "0001",
+      const {data: {reservation}} = await instance.get('/query', {params: {
+        id,
       }});
-      setRides(rsv_hist);
+      setRides([reservation]);
     }
     const queryHost = async() =>{
-      const {data: {host_hist}} = await instance.get('/query', {params: {
+      const {data: {rideshare}} = await instance.get('/query', {params: {
         id: "0001",
       }});
-      setRides(host_hist);
+      console.log(rideshare);
+      setRides([rideshare]);
     }
     if(type === 'query')
       await queryRsv();
@@ -96,6 +99,13 @@ function MyRides({ container, type }) {
     console.log(rides);
     setPanelOpen(!panelOpen);
   };
+
+  function checkTime(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
 
   return (
     <Fragment>
@@ -141,77 +151,93 @@ function MyRides({ container, type }) {
             }
 
             <Box flexGrow={1} overflow="auto">
-              {cardList.length ? cardList.map((product, i) => (
-                <ProductBox key={i}>
-                  <Box mr={1}>
-                    <IMG src={product.imgUrl} alt={product.name} />
-                  </Box>
-                  <ProductDetails>
-                    <H6>{product.name}</H6>
-                  </ProductDetails>
-                  {type === 'query' && 
-                    <>
+              {rides.length ?
+                type === 'post' ? 
+                rides.map((item, i) => (
+                  <ProductBox key={i}>
+                    <Box mr={1}>
+                      <IMG src={item.imgUrl} alt={"行程日期"} />
+                    </Box>
+                    <ProductDetails>
+                      <H6>
+                        {item.date.year + '/' + item.date.month + '/' + item.date.day}
+                      </H6>
+                    </ProductDetails>
+                    <ProductDetails>
+                      <H6>開始時間</H6>
+                      <Small color="text.secondary">
+                        {checkTime(item.schedule[0].hour) + ':' + checkTime(item.schedule[0].minute)}
+                      </Small>
+                    </ProductDetails>
+                    <ProductDetails>
+                      <H6>結束時間</H6>
+                      <Small color="text.secondary">
+                      {checkTime(item.schedule[item.schedule.length - 1].hour)
+                      + ':' + checkTime(item.schedule[item.schedule.length - 1].minute)}
+                      </Small>
+                    </ProductDetails>
+                    {item.status == 'Incomplete'?
+                    <ProductDetails>
+                      <H6>Status</H6>
+                      <Small color="text.secondary">
+                        {item.status}
+                      </Small>
+                    </ProductDetails>
+                    : 
+                    <ProductDetails>
+                      <BasicRating/>
+                    </ProductDetails>}
+                  </ProductBox>))
+                :  
+                  rides.map((item, i) => (
+                    <ProductBox key={i}>
+                      <Box mr={1}>
+                        <IMG src={item.imgUrl} alt={"司機/車牌"} />
+                      </Box>
                       <ProductDetails>
-                        <H6>抵達時間</H6>
+                        <H6>
+                          {item.drv_name + "/" + item.veh_no}
+                        </H6>
+                      </ProductDetails>
+                      <ProductDetails>
+                        <H6>日期</H6>
                         <Small color="text.secondary">
-                          {product.time}
+                          {item.date.year + '/' + item.date.month + '/' + item.date.day}
                         </Small>
                       </ProductDetails>
                       <ProductDetails>
-                        <H6>接送點</H6>
+                        <H6>上車時間/地點</H6>
                         <Small color="text.secondary">
-                          {product.pickupPoint}
-                        </Small>
-                      </ProductDetails>
-                      {product.status == 'Incomplete'?
-                      <ProductDetails>
-                        <H6>Status</H6>
-                        <Small color="text.secondary">
-                          {product.status}
-                        </Small>
-                      </ProductDetails>
-                      : 
-                      <ProductDetails>
-                        <BasicRating/>
-                      </ProductDetails>}
-                    </>
-                  }
-                  {type === 'post' && 
-                    <>
-                      <ProductDetails>
-                        <H6>起點</H6>
-                        <Small color="text.secondary">
-                          {product.start}
+                          {checkTime(item.dep.hour) + ':' + checkTime(item.dep.minute) 
+                          + ',' + item.dep.stop}
                         </Small>
                       </ProductDetails>
                       <ProductDetails>
-                        <H6>終點</H6>
+                        <H6>下車時間/地點</H6>
                         <Small color="text.secondary">
-                          {product.destination}
+                        {checkTime(item.arr.hour) + ':' + checkTime(item.arr.minute) 
+                          + ',' + item.arr.stop}
                         </Small>
                       </ProductDetails>
-                      <ProductDetails>
-                        <H6>預計時間段</H6>
-                        <Small color="text.secondary">
-                          {product.startTime + "-" + product.endTime}
-                        </Small>
-                      </ProductDetails>
-                    </>
-                  }
-                  
-                  {/* <ChatHead>
-                    <Chatbox />
-                  </ChatHead> */}
-                </ProductBox>
-              )) 
-              : 
-              <ProductBox>
+                      {item.status == 'Incomplete'?
+                        <ProductDetails>
+                          <H6>Status</H6>
+                          <Small color="text.secondary">
+                            {item.status}
+                          </Small>
+                        </ProductDetails>
+                        : 
+                        <ProductDetails>
+                          <BasicRating/>
+                        </ProductDetails>}
+                    </ProductBox>))
+                :
                 <ProductDetails>
                   <div style={{opacity:0.6}}>
-                  {"尚無行程😅😅😅"}
+                    {"尚無行程😅😅😅"}
                   </div>
                 </ProductDetails>
-              </ProductBox>}
+                }
             </Box>
 
             {/* <Button
