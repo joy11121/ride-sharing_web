@@ -9,6 +9,11 @@ const UserContext = createContext({
   setMyPos:  () => {},
   myDest: "",
   setMyDest:  () => {},
+  id:"", setId: () => {},
+  name:"", setName: () => {},
+  gender:"", setGender: () => {},
+  title:"", setTitle: () => {},
+  email: "", setEmail: () => {},
 });
 
 export const UserProvider = ({ children }) => {
@@ -17,12 +22,24 @@ export const UserProvider = ({ children }) => {
     const [myPos, setMyPos] = useState("");
     const [myDest, setMyDest] = useState("");
 
+    // User data
+    const [id, setId] = useState("");
+    const [name, setName] = useState("");
+    const [gender, setGender] = useState("");
+    const [title, setTitle] = useState("");
+    const [email, setEmail] = useState("");
+
     return (
         <UserContext.Provider
             value={{ 
                 timeValue, setTimeValue,
                 myPos, setMyPos,
                 myDest, setMyDest,
+                id, setId,
+                name, setName,
+                gender, setGender,
+                title, setTitle,
+                email, setEmail,
              }}
         >
             {children}

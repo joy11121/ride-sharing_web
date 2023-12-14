@@ -8,6 +8,7 @@ export default function BasicFormControl({inputDict, setInputDict, type}) {
   const nameDict = {
     "price": "價格",
     "capacity": "載客容量",
+    "veh_no": "車牌號碼",
   }
   const handleInput = (e) => {
     setInputDict(prev => {

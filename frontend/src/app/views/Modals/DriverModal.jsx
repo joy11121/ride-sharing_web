@@ -6,7 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Grid } from '@mui/material';
+import { Grid, ListItemSecondaryAction } from '@mui/material';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -21,12 +21,15 @@ import ReduceCapacityIcon from '@mui/icons-material/ReduceCapacity';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
 
 import BasicFormControl from './BasicFormControl';
 
 import instance from 'api';
 import LeafletMap from '../Maps/PostMap';
 import { useEffect } from 'react';
+import { useContext } from 'react';
+import UserContext from 'app/contexts/UserContext';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -48,6 +51,7 @@ export default function DriverModal({open, setOpen}) {
 
     // For Leaflet draw lines
     const [lats, setLats] = useState([]);
+    const {timeValue} = useContext(UserContext);
 
     const handleClose = () => {
         setOpen(false);
@@ -63,6 +67,24 @@ export default function DriverModal({open, setOpen}) {
           return prev;
         });
         setCanSend(true);
+    }
+
+    const handleDeleteRide = (idx) => {
+      setSchedule(prev => 
+      {
+        let t = timeValue.$H * 60 + timeValue.$m;
+        const newSchedule = prev.filter((item, index) => {
+          return index != idx;
+        }).map((item, idx) =>
+          {
+            const currT = t + 20 * idx;
+            return {stop: item.stop, hour:(currT / 60) >> 0, minute:currT % 60}
+          });
+        return newSchedule;
+      });
+      setLats(prev => prev.filter((item, index) => {
+        return index != idx;
+      }));
     }
 
     useEffect(() => {
@@ -132,6 +154,18 @@ export default function DriverModal({open, setOpen}) {
                   <ListItem>
                     <ListItemAvatar>
                     <Avatar>
+                      <DirectionsCarFilledIcon />
+                    </Avatar>
+                    </ListItemAvatar>
+                    <BasicFormControl 
+                      inputDict={inputDict}
+                      setInputDict={setInputDict}
+                      type='veh_no'
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                    <Avatar>
                       <AttachMoneyIcon />
                     </Avatar>
                     </ListItemAvatar>
@@ -167,13 +201,7 @@ export default function DriverModal({open, setOpen}) {
                 }
               >
                 {schedule.map((item, idx) =>
-                  <ListItem
-                    secondaryAction={
-                      <IconButton edge="end" aria-label="delete">
-                        <DeleteIcon />
-                      </IconButton>
-                    }
-                  >
+                  <ListItem>
                     <ListItemAvatar>
                       <Avatar>
                         <FolderIcon />
@@ -183,6 +211,13 @@ export default function DriverModal({open, setOpen}) {
                       primary={"我的行程" + idx + ':' + item.stop}
                       secondary={checkTime(item.hour) + ':' + checkTime(item.minute)} 
                     />
+                    <ListItemSecondaryAction>
+                      <IconButton edge="end" aria-label="delete" 
+                        onClick={() => handleDeleteRide(idx)}
+                      >
+                        <DeleteIcon/>
+                      </IconButton>
+                    </ListItemSecondaryAction>
                   </ListItem>
                 )} 
               </List>
@@ -191,7 +226,7 @@ export default function DriverModal({open, setOpen}) {
         
         <DialogActions>
           <Button autoFocus onClick={handleAddRide}>
-            Add Ride
+            新增行程
           </Button>
         </DialogActions>
       </BootstrapDialog>

@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Badge, Button, Drawer, IconButton, ThemeProvider, Box, styled } from '@mui/material';
-import { Clear, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { Clear, KeyboardArrowDown, KeyboardArrowUp, Opacity } from '@mui/icons-material';
 import { H6, Small } from 'app/components/Typography';
 import useSettings from 'app/hooks/useSettings';
 import { themeShadows } from 'app/components/MatxTheme/themeColors';
@@ -39,7 +39,7 @@ const CartBox = styled(Box)({
     marginTop: 0,
     marginBottom: 0,
     marginLeft: '16px',
-    fontWeight: '500'
+    fontWeight: '700',
   }
 });
 
@@ -131,17 +131,17 @@ function MyRides({ container, type }) {
             {type === 'query' ?
               <CartBox>
                 <CommuteIcon color="primary" />
-                <h5>Commute</h5>
+                <h5>我預約的行程</h5>
               </CartBox>
             : 
               <CartBox>
                 <CommuteIcon color="primary" />
-                <h5>Commute</h5>
+                <h5>我刊登的行程</h5>
               </CartBox>
             }
 
             <Box flexGrow={1} overflow="auto">
-              {cardList.map((product, i) => (
+              {cardList.length ? cardList.map((product, i) => (
                 <ProductBox key={i}>
                   <Box mr={1}>
                     <IMG src={product.imgUrl} alt={product.name} />
@@ -203,7 +203,15 @@ function MyRides({ container, type }) {
                     <Chatbox />
                   </ChatHead> */}
                 </ProductBox>
-              ))}
+              )) 
+              : 
+              <ProductBox>
+                <ProductDetails>
+                  <div style={{opacity:0.6}}>
+                  {"尚無行程😅😅😅"}
+                  </div>
+                </ProductDetails>
+              </ProductBox>}
             </Box>
 
             {/* <Button

@@ -8,6 +8,8 @@ import DoughnutChart from "../templates/Doughnut";
 import { H2 } from "../templates/Typography";
 import NextRide from "../templates/NextRide";
 import instance from "api";
+import { useContext } from "react";
+import UserContext from "app/contexts/UserContext";
 
 
 const ContentBox = styled('div')(({ theme }) => ({
@@ -36,11 +38,16 @@ const H4 = styled('h4')(({ theme }) => ({
 }));
   
 const Profile = () => {
-    const [name, setName] = useState("");
-    const [gender, setGender] = useState("");
-    const [title, setTitle] = useState("");
-    const [email, setEmail] = useState("");
-    const [user, setUser] = useState({});
+    const {
+      id, setId, 
+      name, setName, 
+      title, setTitle, 
+      gender, setGender, 
+      email, setEmail,
+    }
+    = useContext(UserContext);
+
+    const [myName, setMyName] = useState("");
     const [mostCommonRide, setMostCommonRide] = useState({name: "", cnt: 0});
     const [secondCommonRide, setSecondCommonRide] = useState({name: "", cnt: 0});
     const [othersRide, setOthersRide] = useState({name: "others", cnt: 0});
@@ -58,12 +65,12 @@ const Profile = () => {
 
 
     const [session, setSession] = useState(JSON.parse(localStorage.getItem("currentUser")) || undefined);
-    const id = JSON.parse(localStorage.getItem("currentUser"))['uid'];
-    console.log(id);
+
     // const getData = async() => {
     //     const user = await instance.get('/query', {params: { id }});
     //     setUser(user);   
     // }
+
     const getData = async() => {
         const user = await instance.get('/query', {params: { id }});
         console.log(user);
@@ -79,6 +86,9 @@ const Profile = () => {
         setCostNumber(user.data.rsv_hist.length);
     }
     useEffect(() => {
+      setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
+    }, []);
+    useEffect(() => {
         // get the data from database
         getData();
         setMostCommonRide({name: 'Jim Huang', cnt: 100});
@@ -88,7 +98,10 @@ const Profile = () => {
         setSecondCommonDrive({name: 'Brian Chen', cnt: 2});
         setOthersDrive({name: 'Others', cnt: 1});
         setNextRide({driver: 'UU', time: '2023/11/11 9:00', location: 'Hsinchu Zoo'});
-    }, []); 
+    }, [id]); 
+    useEffect(() => {
+      setMyName(name);
+    }, [name]);
 
     return (
         <Fragment>
@@ -98,10 +111,10 @@ const Profile = () => {
             <Grid container spacing={3}>
               <Grid item lg={9} md={9} sm={12} xs={12}>
                 <Grid container spacing={2} sx={{ mb: '24px' }}>
-                  <InfoCard name="name" value={name} setValue={setName} />
-                  <InfoCard name="email" value={email} setValue={setEmail} />
-                  <InfoCard name="title" value={title} setValue={setTitle} />
-                  <InfoCard name="gender" value={gender} setValue={setGender} />
+                  <InfoCard nameString="name" value={myName} setValue={setMyName} />
+                  <InfoCard nameString="email" value={email} setValue={setEmail} />
+                  <InfoCard nameString="title" value={title} setValue={setTitle} />
+                  <InfoCard nameString="gender" value={gender} setValue={setGender} />
                 </Grid>
                 <Grid container spacing={2} sx={{ mb: 3 }}>
                   <InfoCard2 name="Rating as Driver" value={rated} amount={null} />

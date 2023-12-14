@@ -24,6 +24,8 @@ import MyRides from 'app/views/MyRides';
 
 import { signOut } from "firebase/auth";
 import { auth } from "../../config/firebase";
+import { useContext } from 'react';
+import UserContext from 'app/contexts/UserContext';
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.text.primary
@@ -86,6 +88,7 @@ const IconBox = styled('div')(({ theme }) => ({
 const Layout1Topbar = () => {
   const theme = useTheme();
   const history = useNavigate();
+  const {name, setName} = useContext(UserContext);
 
   const handleLogout = () => {
     signOut(auth).then((m) => {
@@ -151,7 +154,7 @@ const Layout1Topbar = () => {
               <UserMenu>
                 <Hidden xsDown>
                   <Span>
-                    Hi <strong>Jimmy</strong>
+                    Hi <strong>{name.length > 0 ? name : "User"}</strong>
                   </Span>
                 </Hidden>
                 <Avatar sx={{ cursor: 'pointer' }} />

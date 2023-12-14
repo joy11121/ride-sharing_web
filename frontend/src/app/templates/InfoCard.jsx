@@ -10,6 +10,9 @@ import BorderColorIcon from '@mui/icons-material/BorderColor';
 import CheckIcon from '@mui/icons-material/Check';
 import instance from '../../api';
 
+import { useContext } from "react";
+import UserContext from "app/contexts/UserContext";
+
 const StyledCard = styled(Card)(({ theme }) => ({
     display: 'flex',
     flexWrap: 'wrap',
@@ -36,7 +39,8 @@ const Heading = styled('h6')(({ theme }) => ({
     color: theme.palette.primary.main,
 }));
 
-const InfoCard = ({name, value, setValue}) => {
+const InfoCard = ({nameString, value, setValue}) => {
+    const {name, setName} = useContext(UserContext);
 
     const [disabled, setDisabled] = useState(true);
     const id = JSON.parse(localStorage.getItem("currentUser"))['uid'];
@@ -46,11 +50,13 @@ const InfoCard = ({name, value, setValue}) => {
             setDisabled(false);
         }
         else{
+            if(nameString === 'name')
+                setName(value);
             setDisabled(true);
             await instance.post('/update',
                 {
                     id,
-                    [name]: value,
+                    [nameString]: value,
                 }
             )
         }
@@ -61,15 +67,15 @@ const InfoCard = ({name, value, setValue}) => {
     }
 
     let icon = undefined;
-    if(name === 'name')
+    if(nameString === 'name')
         icon = <AccountCircleIcon className='icon' />;
-    else if(name === 'gender'){
+    else if(nameString === 'gender'){
         if(value === 'male')
             icon = <FaceIcon className='icon'  />;
         else
             icon = <Face3Icon className='icon'  />;
     }
-    else if(name === 'title')
+    else if(nameString === 'title')
         icon = <BadgeIcon className='icon'  />;
     else
         icon = <EmailIcon className='icon'  />;
@@ -80,7 +86,7 @@ const InfoCard = ({name, value, setValue}) => {
             <ContentBox>
               {icon}
               <Box ml="12px">
-                <Small>{name}</Small>
+                <Small>{nameString}</Small>
                 <Heading><TextField id="standard" variant="standard" value={value} onChange={handleChange} disabled={disabled} /></Heading>
               </Box>
             </ContentBox>

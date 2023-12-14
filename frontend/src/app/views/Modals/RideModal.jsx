@@ -53,6 +53,19 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
   // arr_minute
   // fare:
   // rating:
+  function checkTime(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
+
+  //Tmp
+  const lats = [
+    [24.779046663607577, 120.99319338810972, '台積電7廠'],
+    [24.797820970001588, 120.9965950914603, '清華大學'],
+    [24.827501310697876, 120.91150582121116, '廢物媽媽育兒農場'],
+  ]
 
   return (
     <Fragment>
@@ -83,7 +96,11 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
         }}
         >
             <Grid item>
-              <QueryMap />
+              <QueryMap 
+                lats={lats}
+                dep={dep}
+                arr={arr}
+              />
             </Grid>
             <Grid item>   
             <List
@@ -112,7 +129,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
                   </ListItemAvatar>
                   <ListItemText 
                     primary="上車時間"
-                    secondary={ride.dep_hour + ":" + ride.dep_minute} 
+                    secondary={checkTime(ride.dep_hour) + ":" + checkTime(ride.dep_minute)} 
                   />
                 </ListItem>
                 <ListItem>

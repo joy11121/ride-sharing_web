@@ -90,9 +90,7 @@ const QueryTable = () => {
 
   //Data
   const [rides, setRides] = useState([]);
-  const {timeValue, myPos, myDest} = useContext(UserContext);
-  
-  const id = '0002';
+  const {id, setId, timeValue, myPos, myDest} = useContext(UserContext);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -114,6 +112,7 @@ const QueryTable = () => {
     // console.log(timeValue)
     // console.log(timeValue.$y, timeValue.$M + 1, timeValue.$D,
     //   timeValue.$H, timeValue.$m)
+    setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
     const search = async() =>{
       const {data} = await instance.get('/search', {params: {
         year:timeValue.$y, month:timeValue.$M + 1, day:timeValue.$D,
@@ -122,6 +121,7 @@ const QueryTable = () => {
       setRides(data);
     };
     search(); 
+    console.log("id: ", id);
   }, [timeValue, myPos, myDest]);
 
   function checkTime(i) {
