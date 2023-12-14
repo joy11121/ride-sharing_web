@@ -17,8 +17,10 @@ const connect = async () => {
 
     // reset
     await model.user.deleteMany({});
-    await model.ongoing.deleteMany({});
-    await model.expired.deleteMany({});
+    await model.ongoing_rideshare.deleteMany({});
+    await model.expired_rideshare.deleteMany({});
+    await model.ongoing_reservation.deleteMany({});
+    await model.expired_reservation.deleteMany({});
 }
 
 export default {
