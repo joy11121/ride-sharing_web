@@ -78,8 +78,6 @@ const Profile = () => {
         setEmail(user.data.email);
         setName(user.data.name);
         setTitle(user.data.title);
-        setRated(user.data.host_rating);
-        setRatep(user.data.rsv_rating);
         setEarn(user.data.earn);
         setEarnNumber(user.data.host_hist.length);
         setCost(user.data.cost);
@@ -91,6 +89,8 @@ const Profile = () => {
     useEffect(() => {
         // get the data from database
         getData();
+        setRated([1, 2, 3, 4, 5]);
+        setRatep([0, 0, 1, 2, 3]);
         setMostCommonRide({name: 'Jim Huang', cnt: 100});
         setSecondCommonRide({name: 'Kevin Guo', cnt: 60});
         setOthersRide({name: 'Others', cnt: 21});

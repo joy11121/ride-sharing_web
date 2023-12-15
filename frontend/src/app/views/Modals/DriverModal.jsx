@@ -30,6 +30,7 @@ import LeafletMap from '../Maps/PostMap';
 import { useEffect } from 'react';
 import { useContext } from 'react';
 import UserContext from 'app/contexts/UserContext';
+import { calTime } from '../Maps/PostMap';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -70,6 +71,9 @@ export default function DriverModal({open, setOpen}) {
     }
 
     const handleDeleteRide = (idx) => {
+      setLats(prev => prev.filter((item, index) => {
+      return index != idx;
+      }));
       setSchedule(prev => 
       {
         let t = timeValue.$H * 60 + timeValue.$m;
@@ -77,14 +81,13 @@ export default function DriverModal({open, setOpen}) {
           return index != idx;
         }).map((item, idx) =>
           {
-            const currT = t + 20 * idx;
-            return {stop: item.stop, hour:(currT / 60) >> 0, minute:currT % 60}
+            if(idx !== 0)
+              t += calTime(lats[idx-1][0], lats[idx-1][1], lats[idx][0], lats[idx][1]);
+            return {stop: item.stop, hour:(t / 60) >> 0, minute:t % 60}
           });
         return newSchedule;
       });
-      setLats(prev => prev.filter((item, index) => {
-        return index != idx;
-      }));
+      
     }
 
     useEffect(() => {
