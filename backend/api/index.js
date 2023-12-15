@@ -163,15 +163,12 @@ const reserve = async (req, res) => {
         'rideshare.volume': volume,
         'rideshare.pax_cnt': pax_cnt + count,
     }).exec();
-    console.log(rideshare);
 
     res.end();
 }
 
 /**
- * http post, cancel a rideshare reservation
- * @param {Request} req 
- * @param {Response} res 
+ * http post, cancel a reservation
  */
 const cancel = async (req, res) => {
     const {
@@ -225,62 +222,72 @@ const cancel = async (req, res) => {
 }
 
 /**
- * http get, search rideshare
- * @param {Request} req
- * @param {Response} res
+ * http get, search for rideshare
  */
 const search = async (req, res) => {
-    var {year, month, day, hour, minute, dep, arr} = req.query;
+    var {year, month, day, hour, minute, dep, arr, count} = req.query;
+    const threshold = getMinute({hour: parseInt(hour), minute: parseInt(minute)});
 
     // construct aggregation pipeline
     const date = {
         year: parseInt(year),
         month: parseInt(month),
         day: parseInt(day)
-    }, pipeline = [{$match: {date: date}}];
-    if (dep)
-        pipeline.push({$match: {'schedule.stop': {$in: [dep]}}});
-    if (arr)
-        pipeline.push({$match: {'schedule.stop': {$in: [arr]}}});
-    pipeline.push({$project: {_id: 0, no: 1, capacity: 1,
-        schedule: 1, drv_name: 1, drv_rating: 1}});
+    };
+    // const pipeline = [
+    //     {$match: {rideshare: {$ne: null}}},
+    //     {$match: {'rideshare.date': date}},
+    //     {$match: {'rideshare.schedule.stop': {$in: [dep]}}},
+    //     {$match: {'rideshare.schedule.stop': {$in: [arr]}}},
+    //     {$project: {_id: 0, name: 1, rideshare: 1,
+    //         accum_score: 1, accum_count: {$sum: '$rating'}}},
+    // ];
 
-    const result = (await model.ongoing_rideshare.aggregate(pipeline))
-    .filter((r) => {
-        const dep_idx = r.schedule.findIndex((s) => dep === s.stop),
-            arr_idx = r.schedule.findIndex((s) => arr === s.stop);
+    const result = (await userModel.aggregate([
+        {$match: {rideshare: {$ne: null}}},
+        {$match: {'rideshare.date': date}},
+        {$match: {'rideshare.schedule.stop': {$in: [dep]}}},
+        {$match: {'rideshare.schedule.stop': {$in: [arr]}}},
+        {$project: {_id: 0, id: 1, name: 1, rideshare: 1,
+            accum_score: 1, accum_count: {$sum: '$rating'}}},
+    ]))
+    .filter((rst) => {
+        const {rideshare} = rst, {schedule} = rideshare,
+            dep_idx = schedule.findIndex((s) => dep === s.stop),
+            arr_idx = schedule.findIndex((s) => arr === s.stop);
 
         // check order
         if (arr_idx <= dep_idx)
             return false;
 
         // check time
-        if (getMinute(r.schedule[dep_idx]) <
-            getMinute({hour: parseInt(hour), minute: parseInt(minute)}))
+        if (getMinute(schedule[dep_idx]) <= threshold)
             return false;
 
         // check capacity
-        for (let idx = dep_idx; idx <= arr_idx; idx++) {
-            if (r.capacity === r.schedule[idx].volume)
+        for (let idx = dep_idx; idx < arr_idx; idx++) {
+            if (rideshare.capacity < rideshare.volume[idx] + count)
                 return false;
         }
 
         return true;
-    }).map((rs) => {
-        const dep_idx = rs.schedule.findIndex((s) => dep === s.stop),
-            arr_idx = rs.schedule.findIndex((s) => arr === s.stop);
+    }).map((rst) => {
+        const {id, name, accum_score, accum_count, rideshare} = rst;
+        const dep_idx = rideshare.schedule.findIndex((s) => dep === s.stop),
+            arr_idx = rideshare.schedule.findIndex((s) => arr === s.stop);
+
         return {
-            no: rs.no,
-            drv_name: rs.drv_name,
-            drv_rating: rs.drv_rating,
-            fare: rs.schedule[arr_idx].accum_fare - rs.schedule[dep_idx].accum_fare,
-            schedule: rs.schedule.map((s) => {
-                delete s['accum_fare'];
-                delete s['volume'];
-                return s;
-            }),
+            drv_id: id,
+            drv_name: name,
+            drv_rating: accum_count ? accum_score / accum_count : 0,
+            no: rideshare.no,
+            // volume: rideshare.volume,
+            pax_cnt: rideshare.pax_cnt,
+            schedule: rideshare.schedule,
+            unit_fare: rideshare.zone_fare[arr_idx] - rideshare.zone_fare[dep_idx],
         }
     });
+
     res.json(result);
 }
 
@@ -290,6 +297,7 @@ export default {
     host,
     unhost,
     reserve,
+    search,
+
     cancel,
-    search
 }
