@@ -15,12 +15,7 @@ const connect = async () => {
 
     await mongoose.connect(process.env.MONGO_URL);
 
-    // reset
-    await model.user.deleteMany({});
-    await model.ongoing_rideshare.deleteMany({});
-    await model.expired_rideshare.deleteMany({});
-    await model.ongoing_reservation.deleteMany({});
-    await model.expired_reservation.deleteMany({});
+    await model.userModel.deleteMany({});
 }
 
 export default {

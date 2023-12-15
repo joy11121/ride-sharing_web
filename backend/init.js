@@ -9,7 +9,6 @@ const run = async () => {
         const req = httpMock.createRequest({
             body: user
         }), res = httpMock.createResponse();
-        await api.signup(req, res);
         await api.update(req, res);
     }
 

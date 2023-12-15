@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import dayjs from 'dayjs';
 
 const user = [
@@ -60,11 +59,11 @@ const rideshare = [
             day: $D,
         },
         drv_id: '0000',
-        drv_name: 'uu',
+        // drv_name: 'uu',
         veh_no: '0000',
         capacity: 3,
         price: 900,
-        drv_rating: 4.3,
+        // drv_rating: 4.3,
 
         schedule:[
             {stop: positionList[0][2], hour: 23, minute: 0},
@@ -78,11 +77,11 @@ const rideshare = [
             day: $D,
         },
         drv_id: '0001',
-        drv_name: 'benny',
+        // drv_name: 'benny',
         veh_no: '0001',
         capacity: 6,
         price: 10000,
-        drv_rating: 4.3,
+        // drv_rating: 4.3,
 
         schedule:[
             {stop: positionList[0][2], hour: 23, minute: 10},
@@ -90,15 +89,18 @@ const rideshare = [
             {stop: positionList[3][2], hour: 23, minute: 30},
             {stop: positionList[5][2], hour: 23, minute: 50},
         ]
-    },
-    {
-        year: $y,
-        month: $M + 1,
-        day: $D,
-        drv_id: '0001',
-        vehicle: '0001',
-        capacity: 6,
+    }, {
+        date: {
+            year: $y,
+            month: $M + 1,
+            day: $D,
+        },
+        drv_id: '0002',
+        // drv_name: 'jim',
+        veh_no: '0002',
+        capacity: 8,
         price: 10000,
+        // drv_rating: 4.3,
 
         schedule:[
             {stop: positionList[0][2], hour: 23, minute: 10},
