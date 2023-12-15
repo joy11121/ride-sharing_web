@@ -14,6 +14,7 @@ const scheduleSchema = new mongoose.Schema({
 }, {_id: false});
 
 const reservationSchema = mongoose.Schema({
+    no: {type: String, require: true},
     date: {type: dateSchema, require: true},
     veh_no: {type: String, require: true},
     drv_id: {type: String, require: true},

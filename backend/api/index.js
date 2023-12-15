@@ -44,7 +44,7 @@ const query = async (req, res) => {
  * http post, host a rideshare
  */
 const host = async (req, res) => {
-    const {
+    var {
         price,
         drv_id,
         schedule,   // { stop, hour, minute }
@@ -54,7 +54,8 @@ const host = async (req, res) => {
         capacity,   // required but not used
     } = req.body;
     req.body.no = uuidv4();
-    req.body.no = drv_id;   // testing
+    req.body.price = parseInt(price);
+    req.body.capacity = parseInt(capacity);
 
     // calculate zone fares
     req.body.zone_fare = [];
@@ -147,6 +148,8 @@ const reserve = async (req, res) => {
 
     // construct reservation
     const reservation = {
+        no: uuidv4(),
+        // no: '1111',
         date: date,
         veh_no: veh_no,
         drv_id: drv_id,
@@ -172,52 +175,54 @@ const reserve = async (req, res) => {
  */
 const cancel = async (req, res) => {
     const {
-        no, // reservation no
+        no,
+        pax_id,
     } = req.body;
 
     const {
-        date,
-        pax_id,
-        dep_idx,
-        arr_idx,
-        rideshare   // rideshare no
-    } = await model.ongoing_reservation.findOne({no},{
-        _id: 0,
-        date: 1,
-        pax_id: 1,
-        dep_idx: 1,
-        arr_idx: 1,
-        rideshare: 1,
-    }).exec();
-
-    const {
-        schedule
-    } = await model.ongoing_rideshare.findOne({no: rideshare},{
-        _id: 0,
-        schedule: 1,
-    }).exec();
+        drv_id,
+        dep,
+        arr,
+        count,
+    } = (await userModel.findOne({id: pax_id}, {reservation: 1})
+        .exec()).reservation.filter((rsv) => {return no === rsv.no;})[0];
 
     // check date
-    const deadline = new Date(
-        date.year, date.month - 1, date.day, schedule[0].hour, schedule[0].minute);
-    if (deadline.getTime() <= Date.now()) {
-        res.send(`TOO LAAAAATE`);
-        return;
-    }
 
-    // cancel reservation
-    for (let idx = dep_idx; idx <= arr_idx; idx++)
-        schedule[idx].volume--;
+    // remove reservation
+    await userModel.updateOne({id: pax_id}, {$pull: {reservation: {no: no}}});
 
-    await model.ongoing_rideshare.updateOne({no: rideshare},
-        {schedule: schedule}).exec();   // update rideshare schedule
+    // update rideshare
 
-    await model.ongoing_rideshare.updateOne({no: rideshare},
-        {$pull: {reservation: no}}).exec(); // remove reservation in specific rideshare
 
-    await model.ongoing_reservation.findOneAndDelete({no: no}).exec()  // remove reservation
+    // const {
+    //     schedule
+    // } = await model.ongoing_rideshare.findOne({no: rideshare},{
+    //     _id: 0,
+    //     schedule: 1,
+    // }).exec();
 
-    await model.user.updateOne({id: pax_id}, {reservation: ''});  // update user
+    // // check date
+    // const deadline = new Date(
+    //     date.year, date.month - 1, date.day, schedule[0].hour, schedule[0].minute);
+    // if (deadline.getTime() <= Date.now()) {
+    //     res.send(`TOO LAAAAATE`);
+    //     return;
+    // }
+
+    // // cancel reservation
+    // for (let idx = dep_idx; idx <= arr_idx; idx++)
+    //     schedule[idx].volume--;
+
+    // await model.ongoing_rideshare.updateOne({no: rideshare},
+    //     {schedule: schedule}).exec();   // update rideshare schedule
+
+    // await model.ongoing_rideshare.updateOne({no: rideshare},
+    //     {$pull: {reservation: no}}).exec(); // remove reservation in specific rideshare
+
+    // await model.ongoing_reservation.findOneAndDelete({no: no}).exec()  // remove reservation
+
+    // await model.user.updateOne({id: pax_id}, {reservation: ''});  // update user
     res.end();
 }
 
@@ -227,6 +232,7 @@ const cancel = async (req, res) => {
 const search = async (req, res) => {
     var {year, month, day, hour, minute, dep, arr, count} = req.query;
     const threshold = getMinute({hour: parseInt(hour), minute: parseInt(minute)});
+    count = parseInt(count);
 
     // construct aggregation pipeline
     const date = {
@@ -234,14 +240,6 @@ const search = async (req, res) => {
         month: parseInt(month),
         day: parseInt(day)
     };
-    // const pipeline = [
-    //     {$match: {rideshare: {$ne: null}}},
-    //     {$match: {'rideshare.date': date}},
-    //     {$match: {'rideshare.schedule.stop': {$in: [dep]}}},
-    //     {$match: {'rideshare.schedule.stop': {$in: [arr]}}},
-    //     {$project: {_id: 0, name: 1, rideshare: 1,
-    //         accum_score: 1, accum_count: {$sum: '$rating'}}},
-    // ];
 
     const result = (await userModel.aggregate([
         {$match: {rideshare: {$ne: null}}},
