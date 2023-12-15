@@ -83,14 +83,17 @@ function MyRides({ container, type }) {
       const {data: {reservation}} = await instance.get('/query', {params: {
         id,
       }});
-      setRides([reservation]);
+      console.log(id, reservation);
+      if(reservation)
+        setRides(reservation);
     }
     const queryHost = async() =>{
       const {data: {rideshare}} = await instance.get('/query', {params: {
-        id: "0001",
+        id,
       }});
-      console.log(rideshare);
-      setRides([rideshare]);
+      console.log(id, rideshare);
+      if(rideshare)
+        setRides([rideshare]);
     }
     if(type === 'query')
       await queryRsv();
@@ -155,13 +158,19 @@ function MyRides({ container, type }) {
                 type === 'post' ? 
                 rides.map((item, i) => (
                   <ProductBox key={i}>
-                    <Box mr={1}>
+                    {/* <Box mr={1}>
                       <IMG src={item.imgUrl} alt={"行程日期"} />
                     </Box>
                     <ProductDetails>
                       <H6>
-                        {item.date.year + '/' + item.date.month + '/' + item.date.day}
+                        {item.date?.year + '/' + item.date?.month + '/' + item.date?.day}
                       </H6>
+                    </ProductDetails> */}
+                    <ProductDetails>
+                      <H6>行程日期</H6>
+                      <Small color="text.secondary">
+                      {item.date?.year + '/' + item.date?.month + '/' + item.date?.day}
+                      </Small>
                     </ProductDetails>
                     <ProductDetails>
                       <H6>開始時間</H6>
@@ -174,6 +183,18 @@ function MyRides({ container, type }) {
                       <Small color="text.secondary">
                       {checkTime(item.schedule[item.schedule.length - 1].hour)
                       + ':' + checkTime(item.schedule[item.schedule.length - 1].minute)}
+                      </Small>
+                    </ProductDetails>
+                    <ProductDetails>
+                      <H6>起點</H6>
+                      <Small color="text.secondary">
+                        {item.schedule[0].stop}
+                      </Small>
+                    </ProductDetails>
+                    <ProductDetails>
+                      <H6>終點</H6>
+                      <Small color="text.secondary">
+                      {item.schedule[item.schedule.length - 1].stop}
                       </Small>
                     </ProductDetails>
                     {item.status == 'Incomplete'?

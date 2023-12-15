@@ -35,23 +35,6 @@ import img6 from './faces/10.jpg';
 import img7 from './faces/12.jpg';
 const imglist = [img1, img2, img3, img4, img5, img6, img7];
 
-const drivers = [
-  {
-    name: "吉米",
-    startTime: "13:00, 18 january, 2019",
-    arrivaltime: "13:00, 18 january, 2019",
-    price: 1000,
-    rate: 5,
-    start: "中山",
-    pickupPoint: "台大",
-    destination: "TSMC",
-    personCount: 1,
-    capacity: 4,
-    status: "Complete",
-    imgUrl: '/assets/images/products/headphone-2.jpg',
-  },
-]
-
 const StyledTable = styled(Table)(() => ({
   whiteSpace: "pre",
   "& thead": {
@@ -116,7 +99,8 @@ const QueryTable = () => {
     const search = async() =>{
       const {data} = await instance.get('/search', {params: {
         year:timeValue.$y, month:timeValue.$M + 1, day:timeValue.$D,
-        hour:timeValue.$H, minute:timeValue.$m, departure:myPos, arrival:myDest
+        hour:timeValue.$H, minute:timeValue.$m, departure:myPos, arrival:myDest,
+        count: 1,
       }});
       setRides(data);
     };
@@ -232,7 +216,7 @@ const QueryTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {drivers
+              {rides
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((subscriber, index) => (
                   <TableRow key={index}>
@@ -263,7 +247,7 @@ const QueryTable = () => {
           page={page}
           component="div"
           rowsPerPage={rowsPerPage}
-          count={drivers.length}
+          count={rides.length}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
           onRowsPerPageChange={handleChangeRowsPerPage}

@@ -32,6 +32,8 @@ import { useContext } from 'react';
 import UserContext from 'app/contexts/UserContext';
 import { calTime } from '../Maps/PostMap';
 
+import dayjs from 'dayjs';
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -41,33 +43,51 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const id = '0002';
 
 
 export default function DriverModal({open, setOpen}) {
 
-    const [inputDict, setInputDict] = useState({drv_id: id});
+    const {id, setId, timeValue} = useContext(UserContext);
+    // Testing
+    // const id = '0002';
+
+    const {$y, $M, $D, $H, $m} = dayjs(); 
+
+    const [inputDict, setInputDict] = useState(
+      {
+        drv_id: id,
+        date: { year: $y, month: $M, day: $D },
+      }
+    );
     const [schedule, setSchedule] = useState([]);
     const [canSend, setCanSend] = useState(false);
 
     // For Leaflet draw lines
     const [lats, setLats] = useState([]);
-    const {timeValue} = useContext(UserContext);
-
+    
     const handleClose = () => {
-        setOpen(false);
-        setSchedule([]);
-        setInputDict({drv_id: id});
-        setLats([]);
+      setOpen(false);
+      setSchedule([]);
+      setInputDict({
+        drv_id: id,
+        date: { year: $y, month: $M + 1, day: $D },
+      });
+      setLats([]);
+      // console.log(inputDict)
     };
 
     const handleAddRide = () => {
-        setOpen(false);
-        setInputDict(prev => {
-          prev.schedule = schedule; 
-          return prev;
-        });
-        setCanSend(true);
+      if(schedule.length < 2 || 
+        !('veh_no' in inputDict) || isNaN(inputDict['veh_no']) || 
+        !('price' in inputDict) || isNaN(inputDict['price']) || 
+        !('capacity' in inputDict) || isNaN(inputDict['capacity']))
+        return;
+      setOpen(false);
+      setInputDict(prev => {
+        prev.schedule = schedule; 
+        return prev;
+      });
+      setCanSend(true);
     }
 
     const handleDeleteRide = (idx) => {
@@ -93,6 +113,7 @@ export default function DriverModal({open, setOpen}) {
     useEffect(() => {
       const host = async() =>{
         const {data} = await instance.post('/host', inputDict);
+        console.log(inputDict)
         return data;
       }
       if(canSend === true){
@@ -103,11 +124,19 @@ export default function DriverModal({open, setOpen}) {
       }
     }, [canSend]);
 
-    // const {
-    //     price,
-    //     drv_id,
-    //     schedule,   // stop, hour, minute
-    // } = req.body;
+    useEffect(() => {
+      setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
+    }, []);
+
+  //   const {
+  //     price,
+  //     drv_id,
+  //     schedule,   // { stop, hour, minute }
+
+  //     date,   // { year, month, day } required but not used
+  //     veh_no, // required but not used
+  //     capacity,   // required but not used
+  // } = req.body;
     function checkTime(i) {
       if (i < 10) {
         i = "0" + i;
