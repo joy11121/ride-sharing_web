@@ -1,74 +1,11 @@
+import dayjs from 'dayjs';
 import {v4 as uuidv4} from 'uuid';
 import model from '../model/index.js';
 
-/**
- * http post, signup a new user
- * @param {Request} req 
- * @param {Response} res 
- */
-const signup = async (req, res) => {
-    const body = req.body, id = body.id;
-    await model.user.insertMany([body]);
-    res.end();
-}
+const userModel = model.userModel;
 
 /**
- * http post, update existing user's information
- * @param {Request} req
- * @param {Response} res
- */
-const update = async (req, res) => {
-    const body = req.body, id = body.id;
-    await model.user.updateOne({id}, body).exec();
-    res.end();
-}
-
-/**
- * http get, query user's information (with specified fields?)
- * @param {Request} req 
- * @param {Response} res 
- */
-const query = async (req, res) => {
-    const {id} = req.query;
-    const user = await model.user.findOne({id}, {_id: 0, __v: 0,}).exec();
-
-    if (user === null) {    // signup if doesn't exist
-        await model.user.insertMany([{id}]);
-        res.json({id});
-        return;
-    }
-
-    if (user.rideshare !== '') {
-        user.rideshare = await model.ongoing_rideshare.findOne(
-            {no: user.rideshare},   // matching
-            {_id: 0, __v: 0, drv_id: 0, reservation: 0} // projection
-        ).exec();
-    } else if (user.reservation !== '') {
-        user.reservation = await model.ongoing_reservation.findOne(
-            {no: user.reservation}, // matching
-            {_id: 0, __v: 0, rideshare: 0, pax_id: 0, dep_idx: 0, arr_idx: 0}   // projection
-        ).exec();
-    }
-
-    if (user.history.rideshare.length) {
-        user.history.rideshare = await model.ongoing_rideshare.aggregate([
-            {$match: {no: {$in: user.history.rideshare}}},
-            {$project: {_id: 0, __v: 0, drv_id: 0, reservation: 0}},
-        ])
-    }
-
-    if (user.history.reservation.length) {
-        user.history.reservation = await model.ongoing_reservation.aggregate([
-            {$match: {no: {$in: user.history.reservation}}},
-            {$project: {_id: 0, __v: 0, rideshare: 0, pax_id: 0, dep_idx: 0, arr_idx: 0}},
-        ])
-    }
-
-    res.json(user);
-}
-
-/**
- * transfer {hour, minute, ...} to minute
+ * transform {hour, minute, ...} to minute
  * @param {Number} time.hour
  * @param {Number} time.minute
  * @returns {Number}
@@ -78,149 +15,156 @@ const getMinute = (time) => {
 }
 
 /**
- * http post, host a new rideshare
- * @param {Request} req
- * @param {Response} res
+ * http post, update the user's information
+ */
+const update = async (req, res) => {
+    const body = req.body, id = body.id;
+    res.json(await userModel.findOneAndUpdate({id}, body, {
+        new: true, projection: {_id: 0, __v: 0}, upsert: true,
+    }).exec());
+}
+
+/**
+ * http get, query the user's information
+ */
+const query = async (req, res) => {
+    const {id} = req.query;
+    const user = await userModel.findOne({id}, {_id: 0, __v: 0}).exec();
+
+    if (user) {
+        res.json(user);
+    } else {
+        res.json(await userModel.findOneAndUpdate({id}, {id}, {
+            upsert: true, new: true, projection: {_id: 0, __v: 0},
+        }).exec());
+    }
+}
+
+/**
+ * http post, host a rideshare
  */
 const host = async (req, res) => {
     const {
         price,
         drv_id,
-        schedule,   // stop, hour, minute
+        schedule,   // { stop, hour, minute }
 
-        date,   // year, month, day (required but not used)
+        date,   // { year, month, day } required but not used
         veh_no, // required but not used
         capacity,   // required but not used
-        drv_name,   // required but not used
-        drv_rating, // required but not used
     } = req.body;
     req.body.no = uuidv4();
-    req.body.no = drv_id;   // only for testing
+    req.body.no = drv_id;   // testing
 
     // calculate zone fares
-    const k = schedule.length - 1, base = getMinute(schedule[0]),
-        intv = getMinute(schedule[k]) - base;
-    for (let i = 0; i <= k; i++)
-        schedule[i].accum_fare = price * ((getMinute(schedule[i]) - base) / intv);
+    req.body.zone_fare = [];
+    const L = schedule.length, base = getMinute(schedule[0]), intv = getMinute(schedule[L - 1]) - base;
+    for (let i = 0; i < L; i++)
+        req.body.zone_fare.push(price * (getMinute(schedule[i]) - base) / intv);
 
-    await model.ongoing_rideshare.insertMany([req.body]);   // insert rideshare
-    await model.user.updateOne(
-        {id: drv_id},
-        {rideshare: {no: req.body.no, status: 0}}
-    ).exec();  // update driver
+    req.body.volume = new Array(L).fill(0);
+
+    await userModel.updateOne({id: drv_id}, {rideshare: req.body});
     res.end();
 }
 
 /**
- * http post, unhost a existing rideshare
- * @param {Request} req
- * @param {Response} res
+ * http post, unhost a rideshare
  */
 const unhost = async(req, res) => {
-    const {no} = req.body;
+    const {drv_id} = req.body;
 
-    const {drv_id, count} = (await model.ongoing_rideshare.aggregate([
-        {$match: {no: no}},
-        {$project: {_id: 0, drv_id: 1, count: {$size: '$reservation'}}}
-    ]))[0];
+    const {rideshare} = (await userModel.aggregate([
+        {$match: {id: drv_id}},
+        {$project: {_id: 0, 'rideshare.pax_cnt': 1}}
+    ]))[0], {pax_cnt} = rideshare;
 
-    if (count) {    // has been reserved
+    if (pax_cnt) {
         res.send(`TOO LAAAAATE`);
         return;
     }
 
-    await model.ongoing_rideshare.deleteOne({no}).exec();   // delete rideshare
-    await model.user.updateOne({id: drv_id}, {rideshare: null}).exec();  // update driver
+    await userModel.updateOne({id: drv_id}, {rideshare: null}).exec();
     res.end();
 }
 
 /**
  * http post, reserve a rideshare
- * @param {Request} req
- * @param {Response} res
  */
 const reserve = async (req, res) => {
     const {
-        no,
+        drv_id,
+        pax_id,
+        count,
         dep,
         arr,
-        pax_id,
+        no,
     } = req.body;
 
-    const {
-        veh_no,
-        drv_name,
-        capacity,
-        date,
-        schedule,
-    } = await model.ongoing_rideshare.findOne({no}, {
-        _id: 0,
-        __v: 0,
-        no: 0,
-        price: 0,
-        drv_id: 0,
-    }).exec();
+    const {$y, $M, $D, $H, $m} = dayjs();
+    const result = await userModel.findOne({    // condition
+        id: drv_id,
+        rideshare: {$ne: null},
+        'rideshare.no': no,
+    }, {    // projection
+        name: 1, rideshare: 1,
+        // gender: 1,
+    })
 
-    // check date
-    const deadline = new Date(
-        date.year, date.month - 1, date.day, schedule[0].hour, schedule[0].minute);
-    if (deadline.getTime() < Date.now()) {
-        res.send('TOO LAAAAATE');
-        return;
-    }
+    if (!result)
+        return res.send(`RIDESHARE NOT FOUND`);
+
+    const {name, rideshare} = result;
+    const {
+        date,
+        veh_no,
+        schedule,
+        capacity,
+        zone_fare,
+        pax_cnt,
+
+        volume,
+    } = rideshare;
+
+    // check date & time
+    const deadline = new Date(date.year, date.month - 1, date.day,
+        schedule[0].hour, schedule[0].minute);
+    if (deadline.getTime() < Date.now())    // todo: buffer
+        return res.send(`TOO LAAAAATE`);
 
     // check capacity
     const dep_idx = await schedule.findIndex((s) => dep === s.stop),
         arr_idx = await schedule.findIndex((s) => arr === s.stop);
 
-    for (let idx = dep_idx; idx <= arr_idx; idx++) {
-        if (capacity === schedule[idx].volume) {
-            res.send('FUUUUULL');
-            return;
+    for (let idx = dep_idx; idx < arr_idx; idx++) {
+        if (capacity < volume[idx] + count) {
+            return res.send('FUUUUULL');
         }
     }
 
-    for (let idx = dep_idx; idx <= arr_idx; idx++)
-        schedule[idx].volume++;
+    for (let idx = dep_idx; idx < arr_idx; idx++)
+        volume[idx] += count;
 
     // construct reservation
     const reservation = {
-        no: uuidv4(),
-        veh_no: veh_no,
-        drv_name: drv_name,
         date: date,
-        dep: {
-            stop: schedule[dep_idx].stop,
-            hour: schedule[dep_idx].hour,
-            minute: schedule[dep_idx].minute,
-        },
-        arr: {
-            stop: schedule[arr_idx].stop,
-            hour: schedule[arr_idx].hour,
-            minute: schedule[arr_idx].minute,
-        },
-        fare: schedule[arr_idx].accum_fare - schedule[dep_idx].accum_fare,
-
-        rideshare: no,
-        pax_id: pax_id,
-        dep_idx: dep_idx,
-        arr_idx: arr_idx,
+        veh_no: veh_no,
+        drv_id: drv_id,
+        drv_name: name,
+        dep: schedule[dep_idx],
+        arr: schedule[arr_idx],
+        pax_cnt: count,
+        unit_fare: zone_fare[arr_idx] - zone_fare[dep_idx],
     };
+    await userModel.updateOne({id: pax_id}, {$push: {reservation: reservation}}).exec();
 
-    await model.ongoing_reservation.insertMany([reservation]);   // insert reservation
+    // modify rideshare
+    await userModel.updateOne({id: drv_id}, {
+        'rideshare.volume': volume,
+        'rideshare.pax_cnt': pax_cnt + count,
+    }).exec();
+    console.log(rideshare);
 
-    await model.ongoing_rideshare.updateOne(
-        {no},   // rideshare no
-        {
-            schedule: schedule,
-            $push: {reservation: reservation.no},
-        }
-    ).exec();   // update rideshare
-
-    await model.user.updateOne(
-        {id: pax_id},
-        {reservation: {no: reservation.no, status: 0}}
-    ).exec();  // update passenger
     res.end();
 }
 
@@ -276,7 +220,7 @@ const cancel = async (req, res) => {
 
     await model.ongoing_reservation.findOneAndDelete({no: no}).exec()  // remove reservation
 
-    await model.user.updateOne({id: pax_id}, {reservation: null});  // update user
+    await model.user.updateOne({id: pax_id}, {reservation: ''});  // update user
     res.end();
 }
 
@@ -329,23 +273,18 @@ const search = async (req, res) => {
             no: rs.no,
             drv_name: rs.drv_name,
             drv_rating: rs.drv_rating,
-            dep: {
-                hour: rs.schedule[dep_idx].hour,
-                minute: rs.schedule[dep_idx].minute,
-            },
-            arr: {
-                hour: rs.schedule[arr_idx].hour,
-                minute: rs.schedule[arr_idx].minute,
-            },
-            fare: rs.schedule[arr_idx].accum_fare- 
-                rs.schedule[dep_idx].accum_fare,
+            fare: rs.schedule[arr_idx].accum_fare - rs.schedule[dep_idx].accum_fare,
+            schedule: rs.schedule.map((s) => {
+                delete s['accum_fare'];
+                delete s['volume'];
+                return s;
+            }),
         }
     });
     res.json(result);
 }
 
 export default {
-    signup,
     update,
     query,
     host,
