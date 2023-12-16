@@ -6,7 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Grid, ListItemSecondaryAction } from '@mui/material';
+import { Alert, Grid, ListItemSecondaryAction } from '@mui/material';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -33,6 +33,7 @@ import UserContext from 'app/contexts/UserContext';
 import { calTime } from '../Maps/PostMap';
 
 import dayjs from 'dayjs';
+import ActionAlerts from '../ActionAlert';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -65,6 +66,10 @@ export default function DriverModal({open, setOpen}) {
     // For Leaflet draw lines
     const [lats, setLats] = useState([]);
     
+    // Alert
+    const [alertShow, setAlertShow] = useState(false);
+    const [alertType, setAlertType] = useState("");
+    
     const handleClose = () => {
       setOpen(false);
       setSchedule([]);
@@ -80,8 +85,13 @@ export default function DriverModal({open, setOpen}) {
       if(schedule.length < 2 || 
         !('veh_no' in inputDict) || isNaN(inputDict['veh_no']) || 
         !('price' in inputDict) || isNaN(inputDict['price']) || 
-        !('capacity' in inputDict) || isNaN(inputDict['capacity']))
-        return;
+        !('capacity' in inputDict) || isNaN(inputDict['capacity'])){
+          console.log("error");
+          setAlertShow(true);
+          setAlertType("error");
+          return;
+      }
+      setAlertType("success");
       setOpen(false);
       setInputDict(prev => {
         prev.schedule = schedule; 
@@ -157,7 +167,11 @@ export default function DriverModal({open, setOpen}) {
         maxWidth='lg'
         open={open}
       >
-       
+        <ActionAlerts 
+          show={alertShow}
+          setShow={setAlertShow}
+          message={alertType}
+        />
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           點選行程中間點，並輸入駕駛資訊：
         </DialogTitle>
@@ -265,6 +279,5 @@ export default function DriverModal({open, setOpen}) {
           </Button>
         </DialogActions>
       </BootstrapDialog>
-    </Fragment>
-  );
+    </Fragment>);
 }
