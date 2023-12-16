@@ -35,7 +35,10 @@ const rideshareSchema = new mongoose.Schema({
     capacity: {type: Number, require: true},
     zone_fare: {type: [Number], require: true},
 
-    // rsv_ids: {type: [String]},  // or rsv_name ?
+    reservation: {type: [{
+        no: {type: String, require: true},
+        pax_id: {type: String, require: true}
+    }], default: []},
     pax_cnt: {type: Number, default: 0},
     revenue: {type: Number, default: 0},
     state: {type: Number, default: 0}

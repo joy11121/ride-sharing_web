@@ -117,8 +117,7 @@ const reserve = async (req, res) => {
         rideshare: {$ne: null},
         'rideshare.no': no,
     }, {    // projection
-        name: 1, rideshare: 1,
-        // gender: 1,
+        name: 1, rideshare: 1
     })
 
     if (!result)
@@ -131,7 +130,6 @@ const reserve = async (req, res) => {
         schedule,
         capacity,
         zone_fare,
-        pax_cnt,
 
         volume,
     } = rideshare;
@@ -173,7 +171,8 @@ const reserve = async (req, res) => {
     // modify rideshare
     await userModel.updateOne({id: drv_id}, {
         'rideshare.volume': volume,
-        'rideshare.pax_cnt': pax_cnt + count,
+        $inc: {'rideshare.pax_cnt': count},
+        $push: {'rideshare.reservation': {no: reservation.no, pax_id: pax_id}},
     }).exec();
 
     res.end();
@@ -207,7 +206,7 @@ const cancel = async (req, res) => {
     // remove reservation
     await userModel.updateOne({id: pax_id}, {$pull: {reservation: {no: no}}});
 
-    // update rideshare (volume, pax_cnt)
+    // update rideshare
     const {_id, rideshare} = await userModel.findOne({id: drv_id},{rideshare: 1,}),
         {schedule, volume} = rideshare;
 
@@ -218,7 +217,8 @@ const cancel = async (req, res) => {
 
     await userModel.updateOne({id: drv_id}, {
         'rideshare.volume': volume,
-        $inc: {'rideshare.pax_cnt': -count}
+        $inc: {'rideshare.pax_cnt': -count},
+        $pull: {'rideshare.reservation': {no: no, pax_id: pax_id}},
     }).exec();
 
     res.end();
@@ -288,13 +288,21 @@ const search = async (req, res) => {
     res.json(result);
 }
 
+/**
+ * http post, finish a rideshare
+ */
+const finish = async (req, res) => {
+    const {
+        drv_id,
+    } = req.body;
+}
+
 export default {
     update,
     query,
     host,
     unhost,
     reserve,
-    search,
-
     cancel,
+    search,
 }
