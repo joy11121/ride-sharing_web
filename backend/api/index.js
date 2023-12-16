@@ -18,7 +18,7 @@ const getMinute = (time) => {
  * http post, update the user's information
  */
 const update = async (req, res) => {
-    console.log('update', req.body);
+    console.log('update =>', req.body);
     const body = req.body, id = body.id;
     res.json(await userModel.findOneAndUpdate({id}, body, {
         new: true, projection: {_id: 0, __v: 0}, upsert: true,
@@ -77,7 +77,7 @@ const host = async (req, res) => {
  * http post, unhost a rideshare
  */
 const unhost = async(req, res) => {
-    console.log('unhost', req.body);
+    console.log('unhost =>', req.body);
     const {drv_id} = req.body;
 
     const {rideshare} = (await userModel.aggregate([
@@ -98,7 +98,9 @@ const unhost = async(req, res) => {
  * http post, reserve a rideshare
  */
 const reserve = async (req, res) => {
-    console.log('reserve', req.body);
+    req.body.count = parseInt(req.body.count);
+
+    console.log('reserve =>', req.body);
     const {
         drv_id,
         pax_id,
@@ -155,7 +157,6 @@ const reserve = async (req, res) => {
     // construct reservation
     const reservation = {
         no: uuidv4(),
-        // no: '1111',
         date: date,
         veh_no: veh_no,
         drv_id: drv_id,
