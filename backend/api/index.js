@@ -29,17 +29,17 @@ const update = async (req, res) => {
  * http get, query the user's information
  */
 const query = async (req, res) => {
-    console.log('query', req.query);
+    console.log('query =>', req.query);
     const {id} = req.query;
-    const user = await userModel.findOne({id}, {_id: 0, __v: 0}).exec();
+    var user = await userModel.findOne({id}, {_id: 0, __v: 0}).exec();
 
-    if (user) {
-        res.json(user);
-    } else {
-        res.json(await userModel.findOneAndUpdate({id}, {id}, {
+    if (!user) {
+        user = await userModel.findOneAndUpdate({id}, {id}, {
             upsert: true, new: true, projection: {_id: 0, __v: 0},
-        }).exec());
+        }).exec();
     }
+
+    res.json(user);
 }
 
 /**
