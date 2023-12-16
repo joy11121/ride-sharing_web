@@ -10,11 +10,12 @@ router.get('/', (req, res) => {
 
 router.get('/query', api.query);
 router.get('/search', api.search);
-
 router.post('/update', api.update);
 router.post('/host', api.host);
 router.post('/unhost', api.unhost);
 router.post('/reserve', api.reserve);
 router.post('/cancel', api.cancel);
+router.post('/finish', api.finish);
+router.post('/rating', api.rating);
 
 export default router;

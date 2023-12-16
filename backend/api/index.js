@@ -171,7 +171,10 @@ const reserve = async (req, res) => {
     // modify rideshare
     await userModel.updateOne({id: drv_id}, {
         'rideshare.volume': volume,
-        $inc: {'rideshare.pax_cnt': count},
+        $inc: {
+            'rideshare.pax_cnt': count,
+            'rideshare.revenue': count * reservation.unit_fare
+        },
         $push: {'rideshare.reservation': {no: reservation.no, pax_id: pax_id}},
     }).exec();
 
@@ -193,7 +196,8 @@ const cancel = async (req, res) => {
         drv_id,
         dep,
         arr,
-        count
+        count,
+        unit_fare
     } = (await userModel.findOne({id: pax_id}, {reservation: 1})
         .exec()).reservation.filter((rsv) => {return no === rsv.no;})[0];
 
@@ -217,7 +221,10 @@ const cancel = async (req, res) => {
 
     await userModel.updateOne({id: drv_id}, {
         'rideshare.volume': volume,
-        $inc: {'rideshare.pax_cnt': -count},
+        $inc: {
+            'rideshare.pax_cnt': -count,
+            'rideshare.revenue': -count * unit_fare
+        },
         $pull: {'rideshare.reservation': {no: no, pax_id: pax_id}},
     }).exec();
 
@@ -292,8 +299,46 @@ const search = async (req, res) => {
  * http post, finish a rideshare
  */
 const finish = async (req, res) => {
+    console.log('finish =>', req.body);
     const {
         drv_id,
+    } = req.body;
+
+    const {rideshare} = await userModel.findOne({id: drv_id}, {rideshare: 1,}).exec();
+    const {
+        date,
+        schedule,
+    } = rideshare;
+
+    // check time
+    const L = schedule.length, threshold =
+        new Date(date.year, date.month - 1, date.day, schedule[L - 1].hour, schedule[L - 1].minute);
+    if (Date.now() < threshold.getTime())
+        return res.send(`NOT YET`);
+
+    rideshare.state = 1;
+    await userModel.updateOne({id: drv_id}, {
+        rideshare: null,
+        $inc: {revenue: rideshare.revenue},
+        $push: {'rideshare_hist': rideshare},
+    }).exec();
+
+    // todo: inform pax
+
+    res.end();
+}
+
+/**
+ * todo
+ * http post, rating a driver
+ */
+const rating = async (req, res) => {
+    console.log('rating =>', req);
+    req.body.score = parseInt(req.body.score);
+    const {
+        no, // reservation no
+        pax_id,
+        score,
     } = req.body;
 }
 
@@ -305,4 +350,6 @@ export default {
     reserve,
     cancel,
     search,
+    finish,
+    rating
 }
