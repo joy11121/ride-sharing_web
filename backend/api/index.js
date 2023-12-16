@@ -46,7 +46,11 @@ const query = async (req, res) => {
  * http post, host a rideshare
  */
 const host = async (req, res) => {
-    console.log('host', req.body);
+    req.body.no = uuidv4();
+    req.body.price = parseInt(req.body.price);
+    req.body.capacity = parseInt(req.body.capacity);
+
+    console.log('host =>', req.body);
     var {
         price,
         drv_id,
@@ -56,11 +60,6 @@ const host = async (req, res) => {
         veh_no, // required but not used
         capacity,   // required but not used
     } = req.body;
-    req.body.no = uuidv4();
-    req.body.price = parseInt(price);
-    req.body.capacity = parseInt(capacity);
-
-    console.log(req.body);
 
     // calculate zone fares
     req.body.zone_fare = [];
