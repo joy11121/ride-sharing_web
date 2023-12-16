@@ -18,6 +18,7 @@ const getMinute = (time) => {
  * http post, update the user's information
  */
 const update = async (req, res) => {
+    console.log('update', req.body);
     const body = req.body, id = body.id;
     res.json(await userModel.findOneAndUpdate({id}, body, {
         new: true, projection: {_id: 0, __v: 0}, upsert: true,
@@ -28,6 +29,7 @@ const update = async (req, res) => {
  * http get, query the user's information
  */
 const query = async (req, res) => {
+    console.log('query', req.query);
     const {id} = req.query;
     const user = await userModel.findOne({id}, {_id: 0, __v: 0}).exec();
 
@@ -44,6 +46,7 @@ const query = async (req, res) => {
  * http post, host a rideshare
  */
 const host = async (req, res) => {
+    console.log('host', req.body);
     var {
         price,
         drv_id,
@@ -56,6 +59,8 @@ const host = async (req, res) => {
     req.body.no = uuidv4();
     req.body.price = parseInt(price);
     req.body.capacity = parseInt(capacity);
+
+    console.log(req.body);
 
     // calculate zone fares
     req.body.zone_fare = [];
@@ -73,6 +78,7 @@ const host = async (req, res) => {
  * http post, unhost a rideshare
  */
 const unhost = async(req, res) => {
+    console.log('unhost', req.body);
     const {drv_id} = req.body;
 
     const {rideshare} = (await userModel.aggregate([
@@ -93,6 +99,7 @@ const unhost = async(req, res) => {
  * http post, reserve a rideshare
  */
 const reserve = async (req, res) => {
+    console.log('reserve', req.body);
     const {
         drv_id,
         pax_id,
@@ -174,6 +181,7 @@ const reserve = async (req, res) => {
  * http post, cancel a reservation
  */
 const cancel = async (req, res) => {
+    console.log('cancel', req.body);
     const {
         no,
         pax_id,
@@ -230,7 +238,8 @@ const cancel = async (req, res) => {
  * http get, search for rideshare
  */
 const search = async (req, res) => {
-    var {year, month, day, hour, minute, dep, arr, count} = req.query;
+    console.log('search =>', req.query);
+    var {year, month, day, hour, minute, departure, arrival, count} = req.query;
     const threshold = getMinute({hour: parseInt(hour), minute: parseInt(minute)});
     count = parseInt(count);
 
@@ -244,15 +253,15 @@ const search = async (req, res) => {
     const result = (await userModel.aggregate([
         {$match: {rideshare: {$ne: null}}},
         {$match: {'rideshare.date': date}},
-        {$match: {'rideshare.schedule.stop': {$in: [dep]}}},
-        {$match: {'rideshare.schedule.stop': {$in: [arr]}}},
+        {$match: {'rideshare.schedule.stop': {$in: [departure]}}},
+        {$match: {'rideshare.schedule.stop': {$in: [arrival]}}},
         {$project: {_id: 0, id: 1, name: 1, rideshare: 1,
             accum_score: 1, accum_count: {$sum: '$rating'}}},
     ]))
     .filter((rst) => {
         const {rideshare} = rst, {schedule} = rideshare,
-            dep_idx = schedule.findIndex((s) => dep === s.stop),
-            arr_idx = schedule.findIndex((s) => arr === s.stop);
+            dep_idx = schedule.findIndex((s) => departure === s.stop),
+            arr_idx = schedule.findIndex((s) => arrival === s.stop);
 
         // check order
         if (arr_idx <= dep_idx)
@@ -271,8 +280,8 @@ const search = async (req, res) => {
         return true;
     }).map((rst) => {
         const {id, name, accum_score, accum_count, rideshare} = rst;
-        const dep_idx = rideshare.schedule.findIndex((s) => dep === s.stop),
-            arr_idx = rideshare.schedule.findIndex((s) => arr === s.stop);
+        const dep_idx = rideshare.schedule.findIndex((s) => departure === s.stop),
+            arr_idx = rideshare.schedule.findIndex((s) => arrival === s.stop);
 
         return {
             drv_id: id,
