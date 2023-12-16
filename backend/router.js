@@ -15,7 +15,7 @@ router.post('/host', api.host);
 router.post('/unhost', api.unhost);
 router.post('/reserve', api.reserve);
 router.post('/cancel', api.cancel);
-router.post('/finish', api.finish);
-router.post('/rating', api.rating);
+router.post('/complete', api.complete);
+router.post('/rate', api.rate);
 
 export default router;

@@ -298,8 +298,8 @@ const search = async (req, res) => {
 /**
  * http post, finish a rideshare
  */
-const finish = async (req, res) => {
-    console.log('finish =>', req.body);
+const complete = async (req, res) => {
+    console.log('complete =>', req.body);
     const {
         drv_id,
     } = req.body;
@@ -316,6 +316,7 @@ const finish = async (req, res) => {
     if (Date.now() < threshold.getTime())
         return res.send(`NOT YET`);
 
+    // move rideshare to history
     rideshare.state = 1;
     await userModel.updateOne({id: drv_id}, {
         rideshare: null,
@@ -323,8 +324,19 @@ const finish = async (req, res) => {
         $push: {'rideshare_hist': rideshare},
     }).exec();
 
-    // todo: inform pax
-
+    // inform pax (faster?)
+    const {reservation} = rideshare;
+    for (let {no, pax_id} of reservation) {
+        const {reservation} = (await userModel.findOne({id: pax_id}, {reservation: 1}));
+        const L = reservation.length;
+        for (let i = 0; i < L; i++) {
+            if (no === reservation[i].no) {
+                reservation[i].state = 1;
+                break;
+            }
+        }
+        await userModel.updateOne({id: pax_id}, {reservation: reservation});
+    }
     res.end();
 }
 
@@ -332,7 +344,7 @@ const finish = async (req, res) => {
  * todo
  * http post, rating a driver
  */
-const rating = async (req, res) => {
+const rate = async (req, res) => {
     console.log('rating =>', req);
     req.body.score = parseInt(req.body.score);
     const {
@@ -350,6 +362,6 @@ export default {
     reserve,
     cancel,
     search,
-    finish,
-    rating
+    complete,
+    rate
 }
