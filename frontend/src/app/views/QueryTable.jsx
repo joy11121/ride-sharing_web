@@ -265,7 +265,7 @@ const QueryTable = () => {
           nextIconButtonProps={{ "aria-label": "Next Page" }}
           backIconButtonProps={{ "aria-label": "Previous Page" }}
         />
-        <Box sx={{ '& button': { mx: 10, my: 1 }, display:"flex", justifyContent:"center" }}>
+        {/* <Box sx={{ '& button': { mx: 10, my: 1 }, display:"flex", justifyContent:"center" }}>
           <Button variant="outlined" size="large" onClick={()=>setTableMode("search")}>
             我想共乘
           </Button>
@@ -275,7 +275,7 @@ const QueryTable = () => {
           <Button variant="outlined" size="large" onClick={()=>setTableMode("passenger")}>
             歷史紀錄(我是乘客)
           </Button>
-        </Box>
+        </Box> */}
         <Grid sx={{display:'flex', alignItems:'center'}}>
           
         </Grid>

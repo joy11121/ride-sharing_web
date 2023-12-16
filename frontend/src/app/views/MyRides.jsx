@@ -14,11 +14,14 @@ import CommuteIcon from '@mui/icons-material/Commute';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AirportShuttleIcon from '@mui/icons-material/AirportShuttle';
 import HailIcon from '@mui/icons-material/Hail';
+import SendIcon from '@mui/icons-material/Send';
 import Tooltip from '@mui/material/Tooltip';
 import BasicRating from './rateItem';
 
 import instance from 'api';
 import UserContext from 'app/contexts/UserContext';
+import { makeStyles } from '@mui/styles';
+
 
 import img1 from './faces/2.jpg';
 import img2 from './faces/3.jpg';
@@ -60,6 +63,23 @@ const CartBox = styled(Box)({
   }
 });
 
+const useProductBoxStyles = makeStyles({
+  incomplete: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '18px 18px',
+    transition: 'background 300ms ease',
+    '&:hover': { background: 'rgba(0,0,0,0.05)' }
+  },
+  complete: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '18px 18px',
+    transition: 'background 300ms ease',
+    background: 'rgba(255,148,148,0.05)',
+    // '&:hover': { background: 'rgba(255,148,148,0.05)' }
+  }
+});
 const ProductBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
@@ -94,23 +114,38 @@ function MyRides({ container, type }) {
   const [rides, setRides] = useState([]);
   const {id} = useContext(UserContext);
 
+  const productBoxClass = useProductBoxStyles();
+
   const handleDrawerToggle = async () => {
     // Todo: get history
     const queryRsv = async() =>{
       const {data} = await instance.get('/query', {params: {
         id,
       }});
-      console.log(data);
+      // console.log(data);
+
+      let res = [];
       if(data.reservation)
-        setRides(data.reservation);
+        res = res.concat(data.reservation);
+      if(data.reservation_hist)
+        res = res.concat(data.reservation_hist);
+
+      setRides(res);
     }
     const queryHost = async() =>{
       const {data} = await instance.get('/query', {params: {
         id,
       }});
       console.log(data.rideshare);
+
+      let res = [];
       if(data.rideshare)
-        setRides([data.rideshare]);
+        res = res.concat([data.rideshare]);
+      if(data.rideshare_hist)
+        res = res.concat(data.rideshare_hist);
+      // console.log(res)
+
+      setRides(res);
     }
     if(type === 'query')
       await queryRsv();
@@ -125,6 +160,11 @@ function MyRides({ container, type }) {
       i = "0" + i;
     }
     return i;
+  }
+  
+  const sendComplete = async () => {
+    const {data} = await instance.post('/complete', {drv_id: id});
+
   }
 
   return (
@@ -174,7 +214,10 @@ function MyRides({ container, type }) {
               {rides.length ?
                 type === 'post' ? 
                 rides.map((item, i) => (
-                  <ProductBox key={i}>
+                  <Box key={i} className={
+                    item.state === 0 ? productBoxClass.incomplete
+                    : productBoxClass.complete
+                  }>
                     <Box mr={1}>
                       <IMG src={blist[i % blist.length]} alt={"行程日期"} />
                     </Box>
@@ -209,21 +252,20 @@ function MyRides({ container, type }) {
                       {item.schedule[item.schedule.length - 1].stop}
                       </Small>
                     </ProductDetails>
-                    {/* {item.status == 'Incomplete'?
                     <ProductDetails>
-                      <H6>Status</H6>
-                      <Small color="text.secondary">
-                        {item.status}
-                      </Small>
+                      <Button variant="outlined" color="success" disabled={item.state !== 0}
+                        onClick={sendComplete}
+                       endIcon={<SendIcon />}>
+                        確認行程結束
+                      </Button>
                     </ProductDetails>
-                    : 
-                    <ProductDetails>
-                      <BasicRating/>
-                    </ProductDetails>} */}
-                  </ProductBox>))
+                  </Box>))
                 :  
                   rides.map((item, i) => (
-                    <ProductBox key={i}>
+                    <Box key={i} className={
+                      item.state === 0 ? productBoxClass.incomplete
+                      : productBoxClass.complete
+                    }>
                       <Box mr={1}>
                         <IMG src={imglist[i % imglist.length]} alt={"司機/車牌"} />
                       </Box>
@@ -264,7 +306,7 @@ function MyRides({ container, type }) {
                         <ProductDetails>
                           <BasicRating/>
                         </ProductDetails>}
-                    </ProductBox>))
+                    </Box>))
                 :
                 <ProductDetails>
                   <div style={{opacity:0.6}}>
