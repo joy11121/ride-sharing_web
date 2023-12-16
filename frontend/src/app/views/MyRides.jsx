@@ -20,6 +20,22 @@ import BasicRating from './rateItem';
 import instance from 'api';
 import UserContext from 'app/contexts/UserContext';
 
+import img1 from './faces/2.jpg';
+import img2 from './faces/3.jpg';
+import img3 from './faces/4.jpg';
+import img4 from './faces/5.jpg';
+import img5 from './faces/9.jpg';
+import img6 from './faces/10.jpg';
+import img7 from './faces/12.jpg';
+
+import b1 from './badges/badge-1.svg';
+import b2 from './badges/badge-2.svg';
+import b3 from './badges/badge-3.svg';
+import b4 from './badges/badge-4.svg';
+import b5 from './badges/badge-5.svg';
+
+const imglist = [img1, img2, img3, img4, img5, img6, img7];
+const blist = [b1, b2, b3, b4, b5];
 
 // styled components
 const Record = styled(Box)({
@@ -69,6 +85,7 @@ const ProductDetails = styled(Box)({
 });
 
 
+
 function MyRides({ container, type }) {
   const { settings } = useSettings();
   const [panelOpen, setPanelOpen] = useState(false);
@@ -80,20 +97,20 @@ function MyRides({ container, type }) {
   const handleDrawerToggle = async () => {
     // Todo: get history
     const queryRsv = async() =>{
-      const {data: {reservation}} = await instance.get('/query', {params: {
+      const {data} = await instance.get('/query', {params: {
         id,
       }});
-      console.log(id, reservation);
-      if(reservation)
-        setRides(reservation);
+      console.log(data);
+      if(data.reservation)
+        setRides(data.reservation);
     }
     const queryHost = async() =>{
-      const {data: {rideshare}} = await instance.get('/query', {params: {
+      const {data} = await instance.get('/query', {params: {
         id,
       }});
-      console.log(id, rideshare);
-      if(rideshare)
-        setRides([rideshare]);
+      console.log(data.rideshare);
+      if(data.rideshare)
+        setRides([data.rideshare]);
     }
     if(type === 'query')
       await queryRsv();
@@ -158,14 +175,9 @@ function MyRides({ container, type }) {
                 type === 'post' ? 
                 rides.map((item, i) => (
                   <ProductBox key={i}>
-                    {/* <Box mr={1}>
-                      <IMG src={item.imgUrl} alt={"行程日期"} />
+                    <Box mr={1}>
+                      <IMG src={blist[i % blist.length]} alt={"行程日期"} />
                     </Box>
-                    <ProductDetails>
-                      <H6>
-                        {item.date?.year + '/' + item.date?.month + '/' + item.date?.day}
-                      </H6>
-                    </ProductDetails> */}
                     <ProductDetails>
                       <H6>行程日期</H6>
                       <Small color="text.secondary">
@@ -197,7 +209,7 @@ function MyRides({ container, type }) {
                       {item.schedule[item.schedule.length - 1].stop}
                       </Small>
                     </ProductDetails>
-                    {item.status == 'Incomplete'?
+                    {/* {item.status == 'Incomplete'?
                     <ProductDetails>
                       <H6>Status</H6>
                       <Small color="text.secondary">
@@ -207,18 +219,19 @@ function MyRides({ container, type }) {
                     : 
                     <ProductDetails>
                       <BasicRating/>
-                    </ProductDetails>}
+                    </ProductDetails>} */}
                   </ProductBox>))
                 :  
                   rides.map((item, i) => (
                     <ProductBox key={i}>
                       <Box mr={1}>
-                        <IMG src={item.imgUrl} alt={"司機/車牌"} />
+                        <IMG src={imglist[i % imglist.length]} alt={"司機/車牌"} />
                       </Box>
                       <ProductDetails>
-                        <H6>
-                          {item.drv_name + "/" + item.veh_no}
-                        </H6>
+                        <H6>司機/車牌</H6>
+                        <Small color="text.secondary">
+                        {item.drv_name + "/" + item.veh_no}
+                        </Small>
                       </ProductDetails>
                       <ProductDetails>
                         <H6>日期</H6>

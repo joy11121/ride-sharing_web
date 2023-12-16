@@ -102,7 +102,18 @@ const QueryTable = () => {
         hour:timeValue.$H, minute:timeValue.$m, departure:myPos, arrival:myDest,
         count: 1,
       }});
-      setRides(data);
+      if(data && data.length){
+        for(let i = 0; i < data.length; i++){
+          const dep = data[i].schedule.find((s) => myPos === s.stop);
+          const arr = data[i].schedule.find((s) => myDest === s.stop);
+          // console.log(dep, arr)
+          data[i].dep_hour = dep.hour;
+          data[i].dep_minute = dep.minute;
+          data[i].arr_hour = arr.hour;
+          data[i].arr_minute = arr.minute;
+        }
+        setRides(data);
+      }
     };
     search(); 
     console.log(rides);
@@ -170,11 +181,11 @@ const QueryTable = () => {
                       {checkTime(ride.arr_hour) + ':' + checkTime(ride.arr_minute)}
                     </TableCell>
                     <TableCell colSpan={1}>
-                      <Rating name="read-only" value={ride.rate} readOnly />
+                      <Rating name="read-only" value={ride.drv_rating} readOnly />
                     </TableCell>
                     <TableCell colSpan={1}>
                       <Small bgcolor={ride.fare > 1000 ? bgPrimary : bgError}>
-                        {'$' + ride.fare}
+                        {'$' + ride.unit_fare}
                       </Small>
                     </TableCell>
                     {tableMode=="search" && 

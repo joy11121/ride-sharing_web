@@ -13,13 +13,18 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import ImageIcon from '@mui/icons-material/Image';
+import ListSubheader from '@mui/material/ListSubheader';
 
+import ImageIcon from '@mui/icons-material/Image';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import StarsIcon from '@mui/icons-material/Stars';
+import FolderIcon from '@mui/icons-material/Folder';
 
 import instance from 'api';
 import QueryMap from '../Maps/QueryMap';
+import { useEffect } from 'react';
+
+import positionList from '../Maps/PositionList';
 
 // import data from 'app/data';
 
@@ -41,18 +46,17 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
   const handleJoin = async () => {
       setOpen(false);
       const { data } = await instance.post('/reserve', 
-        {no: ride.no, pax_id: id, dep, arr}
+        {
+          drv_id: ride.drv_id,
+          pax_id: id,
+          count: 1,
+          dep,
+          arr,
+          no: ride.no,
+        }
       );
   }
 
-  // no
-  // drv_id
-  // dep_hour
-  // dep_minute
-  // arr_hour
-  // arr_minute
-  // fare:
-  // rating:
   function checkTime(i) {
     if (i < 10) {
       i = "0" + i;
@@ -60,12 +64,24 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
     return i;
   }
 
-  //Tmp
-  const lats = [
+
+  const [lats, setLats] = useState([
     [24.779046663607577, 120.99319338810972, '台積電7廠'],
     [24.797820970001588, 120.9965950914603, '清華大學'],
     [24.827501310697876, 120.91150582121116, '廢物媽媽育兒農場'],
-  ]
+  ]);
+
+  useEffect(() => {
+    if(ride && ride.schedule){
+      const newLats = [];
+      for(let i = 0; i < ride.schedule.length; i++){
+        const curr = positionList.find((s) => s[2] === ride.schedule[i].stop);
+        if(curr)
+          newLats.push(curr);
+      }
+      setLats(newLats);
+    }
+  }, [ride]);
 
   return (
     <Fragment>
@@ -73,7 +89,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         fullWidth
-        maxWidth='md'
+        maxWidth='xl'
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
@@ -103,71 +119,98 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
               />
             </Grid>
             <Grid item>   
-            <List
-                sx={{
-                    width: '100%',
-                    maxWidth: 360,
-                    bgcolor: 'background.paper',
-                }}
-                >
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <ImageIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText 
-                    primary="司機名稱"
-                    secondary={ride.drv_name} 
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <ImageIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText 
-                    primary="上車時間"
-                    secondary={checkTime(ride.dep_hour) + ":" + checkTime(ride.dep_minute)} 
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <ImageIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText 
-                    primary="抵達時間"
-                    secondary={ride.arr_hour + ":" + ride.arr_minute}  
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <AttachMoneyIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText 
-                    primary="價格"
-                    secondary={"$" + ride.fare}  
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <StarsIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText 
-                    primary="評價"
-                    secondary={ride.rating}  
-                  />
-                </ListItem>
-            </List>
+              <List
+                  sx={{
+                      width: '100%',
+                      maxWidth: 360,
+                      bgcolor: 'background.paper',
+                  }}
+                  >
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <ImageIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary="司機名稱"
+                      secondary={ride.drv_name} 
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <ImageIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary="上車時間"
+                      secondary={checkTime(ride.dep_hour) + ":" + checkTime(ride.dep_minute)} 
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <ImageIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary="抵達時間"
+                      secondary={ride.arr_hour + ":" + ride.arr_minute}  
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <AttachMoneyIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary="價格"
+                      secondary={"$" + ride.unit_fare}  
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <StarsIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary="評價"
+                      secondary={ride.drv_rating}  
+                    />
+                  </ListItem>
+              </List>
             </Grid>
+            {ride && ride.schedule && 
+            <Grid item>   
+              <List
+                subheader={
+                  ride.schedule.length ? 
+                  <ListSubheader component="div" id="nested-list-subheader">
+                    預計行程
+                  </ListSubheader>
+                  : ""
+                }
+              >
+                {ride.schedule.map((item, idx) =>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <FolderIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary={"我的行程" + idx + ':' + item.stop}
+                      secondary={checkTime(item.hour) + ':' + checkTime(item.minute)} 
+                    />
+                  </ListItem>
+                )} 
+              </List>
+            </Grid>}
         </Grid>
+        
         
         <DialogActions>
           <Button autoFocus onClick={handleJoin}>

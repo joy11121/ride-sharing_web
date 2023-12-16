@@ -56,7 +56,7 @@ export default function DriverModal({open, setOpen}) {
     const [inputDict, setInputDict] = useState(
       {
         drv_id: id,
-        date: { year: $y, month: $M, day: $D },
+        date: { year: $y, month: $M + 1, day: $D },
       }
     );
     const [schedule, setSchedule] = useState([]);
@@ -125,8 +125,12 @@ export default function DriverModal({open, setOpen}) {
     }, [canSend]);
 
     useEffect(() => {
-      setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
-    }, []);
+      // setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
+      setInputDict({
+        drv_id: id,
+        date: { year: $y, month: $M + 1, day: $D },
+      })
+    }, [id]);
 
   //   const {
   //     price,
@@ -220,8 +224,7 @@ export default function DriverModal({open, setOpen}) {
                     />
                   </ListItem>
               </List>
-            </Grid>   
-              
+            </Grid>      
             <Grid item>   
               <List
                 subheader={
