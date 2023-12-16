@@ -47,6 +47,7 @@ const query = async (req, res) => {
  */
 const host = async (req, res) => {
     req.body.no = uuidv4();
+    // req.body.no = req.body.drv_id;  // debug
     req.body.price = parseInt(req.body.price);
     req.body.capacity = parseInt(req.body.capacity);
 
@@ -157,13 +158,14 @@ const reserve = async (req, res) => {
     // construct reservation
     const reservation = {
         no: uuidv4(),
+        // no: pax_id, // debug
         date: date,
         veh_no: veh_no,
         drv_id: drv_id,
         drv_name: name,
         dep: schedule[dep_idx],
         arr: schedule[arr_idx],
-        pax_cnt: count,
+        count: count,
         unit_fare: zone_fare[arr_idx] - zone_fare[dep_idx],
     };
     await userModel.updateOne({id: pax_id}, {$push: {reservation: reservation}}).exec();
@@ -181,56 +183,44 @@ const reserve = async (req, res) => {
  * http post, cancel a reservation
  */
 const cancel = async (req, res) => {
-    console.log('cancel', req.body);
+    console.log('cancel =>', req.body);
     const {
-        no,
+        no, // reservation no
         pax_id,
     } = req.body;
 
     const {
+        date,
         drv_id,
         dep,
         arr,
-        count,
+        count
     } = (await userModel.findOne({id: pax_id}, {reservation: 1})
         .exec()).reservation.filter((rsv) => {return no === rsv.no;})[0];
 
     // check date
+    const deadline = new Date(date.year, date.month - 1, date.day,
+        dep.hour, dep.minute);
+    if (deadline.getTime() <= Date.now())
+        return res.send(`TOO LAAAAATE`);
 
     // remove reservation
     await userModel.updateOne({id: pax_id}, {$pull: {reservation: {no: no}}});
 
-    // update rideshare
+    // update rideshare (volume, pax_cnt)
+    const {_id, rideshare} = await userModel.findOne({id: drv_id},{rideshare: 1,}),
+        {schedule, volume} = rideshare;
 
+    const dep_idx = schedule.findIndex((s) => dep.stop === s.stop),
+        arr_idx = schedule.findIndex((s) => arr.stop === s.stop);
+    for (let idx = dep_idx; idx < arr_idx; idx++)
+        volume[idx] -= count;
 
-    // const {
-    //     schedule
-    // } = await model.ongoing_rideshare.findOne({no: rideshare},{
-    //     _id: 0,
-    //     schedule: 1,
-    // }).exec();
+    await userModel.updateOne({id: drv_id}, {
+        'rideshare.volume': volume,
+        $inc: {'rideshare.pax_cnt': -count}
+    }).exec();
 
-    // // check date
-    // const deadline = new Date(
-    //     date.year, date.month - 1, date.day, schedule[0].hour, schedule[0].minute);
-    // if (deadline.getTime() <= Date.now()) {
-    //     res.send(`TOO LAAAAATE`);
-    //     return;
-    // }
-
-    // // cancel reservation
-    // for (let idx = dep_idx; idx <= arr_idx; idx++)
-    //     schedule[idx].volume--;
-
-    // await model.ongoing_rideshare.updateOne({no: rideshare},
-    //     {schedule: schedule}).exec();   // update rideshare schedule
-
-    // await model.ongoing_rideshare.updateOne({no: rideshare},
-    //     {$pull: {reservation: no}}).exec(); // remove reservation in specific rideshare
-
-    // await model.ongoing_reservation.findOneAndDelete({no: no}).exec()  // remove reservation
-
-    // await model.user.updateOne({id: pax_id}, {reservation: ''});  // update user
     res.end();
 }
 

@@ -21,7 +21,7 @@ const reservationSchema = mongoose.Schema({
     drv_name: {type: String, require: true},
     dep: {type: scheduleSchema, require: true},
     arr: {type: scheduleSchema, require: true},
-    count: {type: Number, default: 1},
+    count: {type: Number, require: true},
     unit_fare: {type: Number, require: true},
     state: {type: Number, default: 0},
 }, {_id: false});
