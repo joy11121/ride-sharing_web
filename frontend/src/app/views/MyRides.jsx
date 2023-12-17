@@ -279,7 +279,7 @@ function MyRides({ container, type }) {
                     </ProductDetails>
                     <ProductDetails>
                       <Button variant="outlined" color="success" disabled={item.state !== 0}
-                        onClick={sendComplete}
+                        onClick={sendComplete} 
                        endIcon={<SendIcon />}>
                         確認行程結束
                       </Button>
@@ -328,11 +328,10 @@ function MyRides({ container, type }) {
                         </Button>
                       </ProductDetails>
                       {item.state === 0 ?
-                        <ProductDetails>
-                          <H6>尚未開始</H6>
-                          <Small color="text.secondary">
-                            {item.status}
-                          </Small>
+                        <ProductDetails sx={{paddingLeft:'20px'}}>
+                          <Button variant="outlined" color="error" disabled>
+                            尚未開始
+                          </Button>
                         </ProductDetails>
                         : 
                         <ProductDetails>
