@@ -78,6 +78,7 @@ export default function DriverModal({open, setOpen}) {
         date: { year: $y, month: $M + 1, day: $D },
       });
       setLats([]);
+      setAlertShow(false);
       // console.log(inputDict)
     };
 
