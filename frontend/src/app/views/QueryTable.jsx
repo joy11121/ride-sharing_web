@@ -73,7 +73,8 @@ const QueryTable = () => {
 
   //Data
   const [rides, setRides] = useState([]);
-  const {id, setId, timeValue, myPos, myDest, setName} = useContext(UserContext);
+  const {id, setId, timeValue, myPos, myDest, setName, 
+    needTableUpdate, setNeedTableUpdate} = useContext(UserContext);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -122,7 +123,9 @@ const QueryTable = () => {
     search(); 
     console.log(rides);
 
-  }, [timeValue, myPos, myDest]);
+    setNeedTableUpdate(false);
+
+  }, [timeValue, myPos, myDest, needTableUpdate]);
 
   function checkTime(i) {
     if (i < 10) {
@@ -175,7 +178,7 @@ const QueryTable = () => {
                     <TableCell colSpan={1.5} align="left" sx={{ px: 0, textTransform: 'capitalize' }}>
                       <Box display="flex" alignItems="center">
                         <Avatar src={imglist[index % imglist.length]} />
-                        <Paragraph sx={{ m: 0, ml: 4 }}>{ride.drv_id}</Paragraph>
+                        <Paragraph sx={{ m: 0, ml: 4 }}>{ride.drv_name ? ride.drv_name : "User"}</Paragraph>
                       </Box>
                     </TableCell>
                     <TableCell colSpan={1.5}>

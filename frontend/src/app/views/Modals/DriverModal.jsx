@@ -48,7 +48,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export default function DriverModal({open, setOpen}) {
 
-    const {id, setId, timeValue} = useContext(UserContext);
+    const {id, setId, timeValue, setNeedTableUpdate} = useContext(UserContext);
     // Testing
     // const id = '0002';
 
@@ -132,6 +132,7 @@ export default function DriverModal({open, setOpen}) {
         host();
         setCanSend(false);
         handleClose();
+        setNeedTableUpdate(true);
       }
     }, [canSend]);
 

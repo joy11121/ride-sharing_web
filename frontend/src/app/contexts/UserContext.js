@@ -14,6 +14,7 @@ const UserContext = createContext({
   gender:"", setGender: () => {},
   title:"", setTitle: () => {},
   email: "", setEmail: () => {},
+  needTableUpdate: false, setNeedTableUpdate: () => {}
 });
 
 export const UserProvider = ({ children }) => {
@@ -29,6 +30,8 @@ export const UserProvider = ({ children }) => {
     const [title, setTitle] = useState("");
     const [email, setEmail] = useState("");
 
+    const [needTableUpdate, setNeedTableUpdate] = useState(false);
+
     return (
         <UserContext.Provider
             value={{ 
@@ -40,6 +43,7 @@ export const UserProvider = ({ children }) => {
                 gender, setGender,
                 title, setTitle,
                 email, setEmail,
+                needTableUpdate, setNeedTableUpdate,
              }}
         >
             {children}

@@ -15,6 +15,8 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AirportShuttleIcon from '@mui/icons-material/AirportShuttle';
 import HailIcon from '@mui/icons-material/Hail';
 import SendIcon from '@mui/icons-material/Send';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 import Tooltip from '@mui/material/Tooltip';
 import BasicRating from './rateItem';
 
@@ -36,6 +38,7 @@ import b2 from './badges/badge-2.svg';
 import b3 from './badges/badge-3.svg';
 import b4 from './badges/badge-4.svg';
 import b5 from './badges/badge-5.svg';
+import { useEffect } from 'react';
 
 const imglist = [img1, img2, img3, img4, img5, img6, img7];
 const blist = [b1, b2, b3, b4, b5];
@@ -112,7 +115,7 @@ function MyRides({ container, type }) {
   const cardList = [];
 
   const [rides, setRides] = useState([]);
-  const {id} = useContext(UserContext);
+  const {id, needTableUpdate, setNeedTableUpdate} = useContext(UserContext);
 
   const productBoxClass = useProductBoxStyles();
 
@@ -164,8 +167,14 @@ function MyRides({ container, type }) {
   
   const sendComplete = async () => {
     const {data} = await instance.post('/complete', {drv_id: id});
-
   }
+
+  const sendUnhost = async () => {
+    const {data} = await instance.post('/unhost', {drv_id: id});
+    setPanelOpen(!panelOpen);
+    setNeedTableUpdate(true);
+  }
+
 
   return (
     <Fragment>
@@ -251,6 +260,13 @@ function MyRides({ container, type }) {
                       <Small color="text.secondary">
                       {item.schedule[item.schedule.length - 1].stop}
                       </Small>
+                    </ProductDetails>
+                    <ProductDetails>
+                      <Button variant="outlined" color="error" disabled={item.pax_cnt > 0}
+                        onClick={sendUnhost}
+                       endIcon={<CancelIcon />}>
+                        取消行程
+                      </Button>
                     </ProductDetails>
                     <ProductDetails>
                       <Button variant="outlined" color="success" disabled={item.state !== 0}
