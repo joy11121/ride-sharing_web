@@ -119,8 +119,7 @@ function MyRides({ container, type }) {
 
   const productBoxClass = useProductBoxStyles();
 
-  const handleDrawerToggle = async () => {
-    // Todo: get history
+  const getRideData = async () => {
     const queryRsv = async() =>{
       const {data} = await instance.get('/query', {params: {
         id,
@@ -146,7 +145,6 @@ function MyRides({ container, type }) {
         res = res.concat([data.rideshare]);
       if(data.rideshare_hist)
         res = res.concat(data.rideshare_hist);
-      // console.log(res)
 
       setRides(res);
     }
@@ -154,7 +152,10 @@ function MyRides({ container, type }) {
       await queryRsv();
     else
       await queryHost();
-    console.log(rides);
+    // console.log(rides);
+  }
+  const handleDrawerToggle = async () => {
+    await getRideData()
     setPanelOpen(!panelOpen);
   };
 
@@ -171,10 +172,17 @@ function MyRides({ container, type }) {
 
   const sendUnhost = async () => {
     const {data} = await instance.post('/unhost', {drv_id: id});
-    setPanelOpen(!panelOpen);
     setNeedTableUpdate(true);
   }
 
+  const sendCancel = async (no) => {
+    const {data} = await instance.post('/cancel', {pax_id: id, no});
+    setNeedTableUpdate(true);
+  }
+
+  useEffect(() => {
+    getRideData();
+  }, [needTableUpdate])
 
   return (
     <Fragment>
@@ -228,7 +236,8 @@ function MyRides({ container, type }) {
                     : productBoxClass.complete
                   }>
                     <Box mr={1}>
-                      <IMG src={blist[i % blist.length]} alt={"行程日期"} />
+                      <IMG src={blist[(item.schedule[0].minute * item.schedule[item.schedule.length - 1].minute)
+                         % blist.length]} alt={"行程日期"} />
                     </Box>
                     <ProductDetails>
                       <H6>行程日期</H6>
@@ -283,7 +292,7 @@ function MyRides({ container, type }) {
                       : productBoxClass.complete
                     }>
                       <Box mr={1}>
-                        <IMG src={imglist[i % imglist.length]} alt={"司機/車牌"} />
+                        <IMG src={imglist[(item.dep.minute * item.arr.minute) % imglist.length]} alt={"司機/車牌"} />
                       </Box>
                       <ProductDetails>
                         <H6>司機/車牌</H6>
@@ -311,9 +320,16 @@ function MyRides({ container, type }) {
                           + ',' + item.arr.stop}
                         </Small>
                       </ProductDetails>
-                      {item.status == 'Incomplete'?
+                      <ProductDetails>
+                        <Button variant="outlined" color="error" disabled={item.pax_cnt > 0}
+                          onClick={() => sendCancel(item.no)}
+                        endIcon={<CancelIcon />}>
+                          取消預約
+                        </Button>
+                      </ProductDetails>
+                      {item.state === 0 ?
                         <ProductDetails>
-                          <H6>Status</H6>
+                          <H6>尚未開始</H6>
                           <Small color="text.secondary">
                             {item.status}
                           </Small>
