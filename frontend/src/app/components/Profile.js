@@ -11,7 +11,7 @@ import instance from "api";
 import { useContext } from "react";
 import UserContext from "app/contexts/UserContext";
 
-
+// const fakeData = [{drv_name: 'Jim'}, {drv_name: 'Jim'}, {drv_name: 'Jim'}];
 const ContentBox = styled('div')(({ theme }) => ({
     margin: '30px',
     [theme.breakpoints.down('sm')]: { margin: '16px' },
@@ -48,28 +48,27 @@ const Profile = () => {
     = useContext(UserContext);
 
     const [myName, setMyName] = useState("");
-    const [mostCommonRide, setMostCommonRide] = useState({name: "", cnt: 0});
-    const [secondCommonRide, setSecondCommonRide] = useState({name: "", cnt: 0});
-    const [othersRide, setOthersRide] = useState({name: "others", cnt: 0});
-    const [mostCommonDrive, setMostCommonDrive] = useState({name: "", cnt: 0});
-    const [secondCommonDrive, setSecondCommonDrive] = useState({name: "", cnt: 0});
-    const [othersDrive, setOthersDrive] = useState({name: "others", cnt: 0});
+    const [rideHist, setRideHist] = useState([]);
     const [rated, setRated] = useState([]);
-    const [ratep, setRatep] = useState([]);
     const [earn, setEarn] = useState(0);
     const [earnNumber, setEarnNumber] = useState(0);
     const [cost, setCost] = useState(0);
     const [costNumber, setCostNumber] = useState(0);
     const [nextRide, setNextRide] = useState({});
-    const [isFlip3, setIsFlip3] = useState(false);
 
-
-    const [session, setSession] = useState(JSON.parse(localStorage.getItem("currentUser")) || undefined);
-
-    // const getData = async() => {
-    //     const user = await instance.get('/query', {params: { id }});
-    //     setUser(user);   
-    // }
+    const getNextRide = (reservation) => {
+      if(reservation.length === 0)
+        return null;
+      let upcoming = null;
+      let minTime = 1440;
+      for(let i = 0; i < reservation.length; i++){
+        if(reservation[i].dep.hour * 60 + reservation[i].dep.minute < minTime){
+          minTime = reservation[i].dep.hour * 60 + reservation[i].dep.minute;
+          upcoming = reservation[i];
+        }
+      }
+      return {'driver': upcoming.drv_name, 'date': upcoming.date, 'start': upcoming.dep, 'destination': upcoming.arr.stop}
+    }
 
     const getData = async() => {
         const user = await instance.get('/query', {params: { id }});
@@ -78,10 +77,13 @@ const Profile = () => {
         setEmail(user.data.email);
         setName(user.data.name);
         setTitle(user.data.title);
-        setEarn(user.data.earn);
-        setEarnNumber(user.data.host_hist.length);
-        setCost(user.data.cost);
-        setCostNumber(user.data.rsv_hist.length);
+        setEarn(user.data.revenue);
+        setEarnNumber(user.data.rideshare_hist.length);
+        setCost(user.data.expense);
+        setCostNumber(user.data.reservation_hist.length);
+        setRated(user.data.rating);
+        setRideHist(user.data.reservation_hist);
+        setNextRide(getNextRide(user.data.reservation));
     }
     useEffect(() => {
       setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
@@ -89,15 +91,6 @@ const Profile = () => {
     useEffect(() => {
         // get the data from database
         getData();
-        setRated([1, 2, 3, 4, 5]);
-        setRatep([0, 0, 1, 2, 3]);
-        setMostCommonRide({name: 'Jim Huang', cnt: 100});
-        setSecondCommonRide({name: 'Kevin Guo', cnt: 60});
-        setOthersRide({name: 'Others', cnt: 21});
-        setMostCommonDrive({name: 'UU', cnt: 5});
-        setSecondCommonDrive({name: 'Brian Chen', cnt: 2});
-        setOthersDrive({name: 'Others', cnt: 1});
-        setNextRide({driver: 'UU', time: '2023/11/11 9:00', location: 'Hsinchu Zoo'});
     }, [id]); 
     useEffect(() => {
       setMyName(name);
@@ -117,34 +110,22 @@ const Profile = () => {
                   <InfoCard nameString="gender" value={gender} setValue={setGender} />
                 </Grid>
                 <Grid container spacing={2} sx={{ mb: 3 }}>
-                  <InfoCard2 name="Rating as Driver" value={rated} amount={null} />
-                  <InfoCard2 name="Rating as Passenger" value={ratep} amount={null} />
+                  <InfoCard2 name="Rating" value={rated} amount={null} />
+                  <InfoCard2 name="Times" value={[earnNumber, costNumber]} amount={null} />
                   <InfoCard2 name="Earn" value={earn} amount={earnNumber} />
                   <InfoCard2 name="Cost" value={cost} amount={costNumber} />
                 </Grid>
               </Grid>
               <Grid item lg={3} md={3} sm={12} xs={12}>
-                <div style={{ cursor: 'pointer' }} onClick={() => setIsFlip3(prev => !prev)}>
-                {isFlip3 ? 
-                    <Card sx={{ px: 3, py: 1.6, mb: 3 }}>
-                    <Title>Total Drive</Title>
-                    <SubTitle>{mostCommonDrive.cnt + secondCommonDrive.cnt + othersDrive.cnt} times</SubTitle>
+                <Card sx={{ px: 3, py: 1.6, mb: 3 }}>
+                  <Title>最常合作駕駛</Title>
+                  <SubTitle>{rideHist.length} times</SubTitle>
+                  {rideHist.length ? 
                     <DoughnutChart
-                        data={[mostCommonDrive, secondCommonDrive, othersDrive]}
-                        height="280px"
-                        color={['#84cc62', '#5793d9', '#e63a20']}
-                    />
-                    </Card> :
-                    <Card sx={{ px: 3, py: 1.6, mb: 3 }}>
-                    <Title>Total Ride</Title>
-                    <SubTitle>{mostCommonRide.cnt + secondCommonRide.cnt + othersRide.cnt} times</SubTitle>
-                    <DoughnutChart
-                        data={[mostCommonRide, secondCommonRide, othersRide]}
-                        height="280px"
-                        color={['#84cc62', '#5793d9', '#e63a20']}
-                    />
-                    </Card>}
-                </div>
+                      data={rideHist}
+                      height="260px"
+                    /> : <H4>尚未有搭乘紀錄...</H4>}
+                </Card>
                 <NextRide nextInfo={nextRide} />
               </Grid>
             </Grid>

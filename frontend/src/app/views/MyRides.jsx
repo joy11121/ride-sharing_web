@@ -309,8 +309,8 @@ function MyRides({ container, type }) {
                     </Box>))
                 :
                 <ProductDetails>
-                  <div style={{opacity:0.6}}>
-                    {"尚無行程😅😅😅"}
+                  <div style={{opacity:0.6, padding: 10}}>
+                    <H6>{"尚無行程😅😅😅"}</H6>
                   </div>
                 </ProductDetails>
                 }

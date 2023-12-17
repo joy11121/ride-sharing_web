@@ -86,7 +86,9 @@ const InfoCard = ({nameString, value, setValue}) => {
             <ContentBox>
               {icon}
               <Box ml="12px">
-                <Small>{nameString}</Small>
+                <Small>
+                    {nameString == "name" ? "姓名" : nameString == "gender" ? "性別" : nameString == "title" ? "職稱" : "信箱"}
+                </Small>
                 <Heading><TextField id="standard" variant="standard" value={value} onChange={handleChange} disabled={disabled} /></Heading>
               </Box>
             </ContentBox>

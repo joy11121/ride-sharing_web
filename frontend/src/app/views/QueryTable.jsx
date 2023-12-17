@@ -73,7 +73,7 @@ const QueryTable = () => {
 
   //Data
   const [rides, setRides] = useState([]);
-  const {id, setId, timeValue, myPos, myDest} = useContext(UserContext);
+  const {id, setId, timeValue, myPos, myDest, setName} = useContext(UserContext);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -90,12 +90,16 @@ const QueryTable = () => {
     setModalRide(rides[index]);
   }
 
-
+  const getData = async() => {
+    const user = await instance.get('/query', {params: { id }});
+    setName(user.data.name);
+  }
   useEffect(() => {
     // console.log(timeValue)
     // console.log(timeValue.$y, timeValue.$M + 1, timeValue.$D,
     //   timeValue.$H, timeValue.$m)
     setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
+    getData();
     const search = async() =>{
       const {data} = await instance.get('/search', {params: {
         year:timeValue.$y, month:timeValue.$M + 1, day:timeValue.$D,

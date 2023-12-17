@@ -2,8 +2,30 @@ import React from 'react';
 import { useTheme } from '@mui/material';
 import ReactEcharts from 'echarts-for-react';
 
-const DoughnutChart = ({ data, height, color }) => {
+
+const getTop2 = (rideHist) => {
+  let a = {};
+  rideHist.forEach(item => {
+    a[item.drv_name] = (a[item.drv_name] || 0) + 1;
+  });
+  const nameArray = Object.entries(a);
+  nameArray.sort((a, b) => b[1] - a[1]);
+  const topN = 2;
+  let res = nameArray.slice(0, topN);
+  let cnt = 0;
+  for(let i = 0; i < res.length; i++){
+    cnt += res[i][1];
+  }
+  if(res.length == 2 && rideHist.length - cnt > 0)
+    res.push(["others", rideHist.length - cnt])
+  console.log(res);
+  return res.map(item => {return {name: item[0], value: item[1]}});
+}
+const DoughnutChart = ({ data, height}) => {
   const theme = useTheme();
+  let color = ['#84cc62', '#5793d9', '#e63a20'];
+  data = getTop2(data);
+  color = color.slice(0, data.length);
 
   const option = {
     legend: {
@@ -78,20 +100,7 @@ const DoughnutChart = ({ data, height, color }) => {
             show: false
           }
         },
-        data: [
-          {
-            value: data[0].cnt,
-            name: data[0].name
-          },
-          {
-            value: data[1].cnt,
-            name: data[1].name
-          },
-          { 
-            value: data[2].cnt,
-            name: data[2].name
-          }
-        ],
+        data: data,
         itemStyle: {
           emphasis: {
             shadowBlur: 10,
