@@ -46,8 +46,8 @@ const query = async (req, res) => {
  * http post, host a rideshare
  */
 const host = async (req, res) => {
-    // req.body.no = uuidv4();
-    req.body.no = req.body.drv_id;  // debug
+    req.body.no = uuidv4();
+    // req.body.no = req.body.drv_id;  // debug
     req.body.price = parseInt(req.body.price);
     req.body.capacity = parseInt(req.body.capacity);
 
