@@ -135,7 +135,7 @@ const reserve = async (req, res) => {
     } = rideshare;
 
     // check date & time
-    const deadline = new Date(date.year, date.month - 1, date.day,
+    const deadline = new Date(date.year, date.month, date.day,
         schedule[0].hour, schedule[0].minute);
     if (deadline.getTime() < Date.now())    // todo: buffer
         return res.send(`TOO LAAAAATE`);
@@ -353,8 +353,10 @@ const rate = async (req, res) => {
         score,
     } = req.body;
 
-    const reservation = (await userModel.findOne({id: pax_id}, {reservation: 1}).exec()).
-        reservation.filter((rsv) => {return no === rsv.no})[0];
+    let reservation = (await userModel.findOne({id: pax_id}, {reservation: 1}).exec())
+        .reservation.filter((rsv) => {return no === rsv.no})
+    reservation = reservation[0];
+    // console.log(reservation)
 
     await userModel.updateOne({id: pax_id}, {
         $pull: {reservation: {'reservation.no': no}},

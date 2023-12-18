@@ -3,13 +3,14 @@ import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
 import { H6, Small } from 'app/components/Typography';
+import { Button } from '@mui/material';
 
-export default function BasicRating() {
+export default function BasicRating({sendRating, pax_id, no, disabled}) {
   const [value, setValue] = React.useState(2);
 
   return (
     <>
-      <H6>Controlled</H6>
+      <H6>請給司機評分呦</H6>
       <Rating
         name="simple-controlled"
         value={value}
@@ -17,6 +18,11 @@ export default function BasicRating() {
           setValue(newValue);
         }}
       />
+      <Button variant="outlined" color="success"
+        onClick={()=>sendRating({pax_id, no, score: value})}
+      >
+        送出評價
+      </Button>
     </>
   );
 }

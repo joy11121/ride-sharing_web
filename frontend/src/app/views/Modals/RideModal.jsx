@@ -55,6 +55,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
           no: ride.no,
         }
       );
+      console.log("reserve response", data);
   }
 
   function checkTime(i) {

@@ -168,6 +168,7 @@ function MyRides({ container, type }) {
   
   const sendComplete = async () => {
     const {data} = await instance.post('/complete', {drv_id: id});
+    setNeedTableUpdate(true);
   }
 
   const sendUnhost = async () => {
@@ -177,6 +178,11 @@ function MyRides({ container, type }) {
 
   const sendCancel = async (no) => {
     const {data} = await instance.post('/cancel', {pax_id: id, no});
+    setNeedTableUpdate(true);
+  }
+
+  const sendRating = async ({no, pax_id, score}) => {
+    const {data} = await instance.post('/rate', {no, pax_id, score});
     setNeedTableUpdate(true);
   }
 
@@ -271,7 +277,7 @@ function MyRides({ container, type }) {
                       </Small>
                     </ProductDetails>
                     <ProductDetails>
-                      <Button variant="outlined" color="error" disabled={item.pax_cnt > 0}
+                      <Button variant="outlined" color="error" disabled={item.pax_cnt > 0 || item.state !== 0}
                         onClick={sendUnhost}
                        endIcon={<CancelIcon />}>
                         取消行程
@@ -297,7 +303,7 @@ function MyRides({ container, type }) {
                       <ProductDetails>
                         <H6>司機/車牌</H6>
                         <Small color="text.secondary">
-                        {item.drv_name + "/" + item.veh_no}
+                        {(item.drv_name ? item.drv_name : "User") + "/" + item.veh_no}
                         </Small>
                       </ProductDetails>
                       <ProductDetails>
@@ -321,7 +327,7 @@ function MyRides({ container, type }) {
                         </Small>
                       </ProductDetails>
                       <ProductDetails>
-                        <Button variant="outlined" color="error" disabled={item.pax_cnt > 0}
+                        <Button variant="outlined" color="error" disabled={item.state !== 0}
                           onClick={() => sendCancel(item.no)}
                         endIcon={<CancelIcon />}>
                           取消預約
@@ -330,12 +336,17 @@ function MyRides({ container, type }) {
                       {item.state === 0 ?
                         <ProductDetails sx={{paddingLeft:'20px'}}>
                           <Button variant="outlined" color="error" disabled>
-                            尚未開始
+                            尚未結束
                           </Button>
                         </ProductDetails>
                         : 
                         <ProductDetails>
-                          <BasicRating/>
+                          <BasicRating
+                            sendRating={sendRating}
+                            no={item.no}
+                            pax_id={id}
+                            disabled={item.state === 1}
+                          />
                         </ProductDetails>}
                     </Box>))
                 :
