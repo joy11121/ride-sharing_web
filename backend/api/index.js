@@ -155,8 +155,8 @@ const reserve = async (req, res) => {
 
     // construct reservation
     const reservation = {
-        // no: uuidv4(),
-        no: pax_id, // debug
+        no: uuidv4(),
+        // no: pax_id, // debug
         date: date,
         veh_no: veh_no,
         drv_id: drv_id,

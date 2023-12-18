@@ -32,7 +32,9 @@ const Filter = () => {
             const newList = positionList.map((item) => ({name: item[2], checked: false}));
             newList[newList.length - 1].checked = true;
             return newList;
-        })
+        });
+        setMyPos(positionList[0].name);
+        setMyDest(positionList[positionList.length - 1].name);
     }
 
     useEffect(() => {
