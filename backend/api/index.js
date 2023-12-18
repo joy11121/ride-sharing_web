@@ -202,7 +202,7 @@ const cancel = async (req, res) => {
         .exec()).reservation.filter((rsv) => {return no === rsv.no;})[0];
 
     // check date
-    const deadline = new Date(date.year, date.month - 1, date.day,
+    const deadline = new Date(date.year, date.month, date.day,
         dep.hour, dep.minute);
     if (deadline.getTime() <= Date.now())
         return res.send(`TOO LAAAAATE`);
