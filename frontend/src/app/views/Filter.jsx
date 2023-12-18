@@ -23,8 +23,16 @@ const Filter = () => {
     const [locations2, setLocations2] = useState([]);
 
     const resetTypes = () => {
-        setLocations1(positionList.map((item) => ({name: item[2], checked: false})));
-        setLocations2(positionList.map((item) => ({name: item[2], checked: false})))
+        setLocations1(prev => {
+            const newList = positionList.map((item) => ({name: item[2], checked: false}));
+            newList[0].checked = true;
+            return newList;
+        });
+        setLocations2(prev => {
+            const newList = positionList.map((item) => ({name: item[2], checked: false}));
+            newList[newList.length - 1].checked = true;
+            return newList;
+        })
     }
 
     useEffect(() => {

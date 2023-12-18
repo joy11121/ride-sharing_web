@@ -109,7 +109,7 @@ const Layout1Topbar = () => {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -120,7 +120,9 @@ const Layout1Topbar = () => {
               textDecoration: 'none',
             }}
           >
+            <Link to="/searchRides">
             TSMCOOL
+            </Link>
           </Typography>
 
           <IconBox>

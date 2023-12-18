@@ -22,6 +22,8 @@ import { Paragraph } from 'app/components/Typography';
 import { useEffect } from "react";
 import RideModal from "./Modals/RideModal";
 
+import positionList from "./Maps/PositionList";
+
 import instance from "api";
 import { useContext } from "react";
 import UserContext from "app/contexts/UserContext";
@@ -73,8 +75,8 @@ const QueryTable = () => {
 
   //Data
   const [rides, setRides] = useState([]);
-  const {id, setId, timeValue, myPos, myDest, setName, 
-    needTableUpdate, setNeedTableUpdate} = useContext(UserContext);
+  const {id, setId, timeValue, myPos, myDest, setMyPos, setMyDest,
+    setName, needTableUpdate, setNeedTableUpdate} = useContext(UserContext);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -126,6 +128,11 @@ const QueryTable = () => {
     setNeedTableUpdate(false);
 
   }, [timeValue, myPos, myDest, needTableUpdate]);
+
+  // useEffect(() => {
+  //   setMyPos(positionList[0][2]);
+  //   setMyDest(positionList[positionList.length - 1][2]);
+  // }, []);
 
   function checkTime(i) {
     if (i < 10) {

@@ -25,6 +25,9 @@ import QueryMap from '../Maps/QueryMap';
 import { useEffect } from 'react';
 
 import positionList from '../Maps/PositionList';
+import { useContext } from 'react';
+import { useTabContext } from '@mui/lab';
+import UserContext from 'app/contexts/UserContext';
 
 // import data from 'app/data';
 
@@ -42,6 +45,8 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
   const handleClose = () => {
       setOpen(false);
   };
+
+  const {name} = useContext(UserContext);
 
   const handleJoin = async () => {
       setOpen(false);
@@ -94,7 +99,7 @@ export default function RideModal({open, setOpen, ride, dep, arr, id}) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Hi, Jimmy ! 準備加入新行程？
+          {"Hi, " + (name?name:"User") +  " ! 準備加入新行程？"}
         </DialogTitle>
         <IconButton
           aria-label="close"

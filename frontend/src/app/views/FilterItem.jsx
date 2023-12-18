@@ -26,7 +26,7 @@ export default function FilterItem({items, index, setItems, setMyPos}) {
     setMyPos(items[index].name);
     setItems((prev) => {
       const newItems = prev.map((item) => ({name: item.name, checked: false}));
-      newItems[index].checked = !prev[index].checked;
+      newItems[index].checked = true;
       return newItems;
     })
   };
