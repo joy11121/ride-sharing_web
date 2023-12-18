@@ -11,6 +11,7 @@ export default function MyTimePicker({value, setValue}) {
       <DemoContainer components={['TimePicker', 'TimePicker']}>
         <TimePicker
           label="我想幾點搭車"
+          ampm={false}
           value={value}
           onChange={(newValue) => setValue(newValue)}
         />
