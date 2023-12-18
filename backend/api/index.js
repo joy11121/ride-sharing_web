@@ -46,8 +46,8 @@ const query = async (req, res) => {
  * http post, host a rideshare
  */
 const host = async (req, res) => {
-    req.body.no = uuidv4();
-    // req.body.no = req.body.drv_id;  // debug
+    // req.body.no = uuidv4();
+    req.body.no = req.body.drv_id;  // debug
     req.body.price = parseInt(req.body.price);
     req.body.capacity = parseInt(req.body.capacity);
 
@@ -155,8 +155,8 @@ const reserve = async (req, res) => {
 
     // construct reservation
     const reservation = {
-        no: uuidv4(),
-        // no: pax_id, // debug
+        // no: uuidv4(),
+        no: pax_id, // debug
         date: date,
         veh_no: veh_no,
         drv_id: drv_id,
@@ -345,13 +345,33 @@ const complete = async (req, res) => {
  * http post, rating a driver
  */
 const rate = async (req, res) => {
-    console.log('rating =>', req);
+    console.log('rating =>', req.body);
     req.body.score = parseInt(req.body.score);
     const {
         no, // reservation no
         pax_id,
         score,
     } = req.body;
+
+    const reservation = (await userModel.findOne({id: pax_id}, {reservation: 1}).exec()).
+        reservation.filter((rsv) => {return no === rsv.no})[0];
+
+    await userModel.updateOne({id: pax_id}, {
+        $pull: {reservation: {'reservation.no': no}},
+        $push: {reservation_hist: reservation}, 
+    }).exec();
+
+    const {rating} = await userModel.findOne({id: reservation.drv_id}, {rating: 1}).exec();
+    rating[score - 1]++;
+
+    await userModel.updateOne({id: reservation.drv_id}, {
+        rating: rating,
+        $inc: {
+            accum_score: score,
+        }
+    })
+
+    res.end();
 }
 
 export default {
