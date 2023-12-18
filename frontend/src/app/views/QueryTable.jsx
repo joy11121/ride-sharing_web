@@ -119,8 +119,8 @@ const QueryTable = () => {
           data[i].arr_hour = arr.hour;
           data[i].arr_minute = arr.minute;
         }
-        setRides(data);
       }
+      setRides(data);
     };
     search(); 
     console.log(rides);
