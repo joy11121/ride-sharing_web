@@ -10,8 +10,10 @@ await init.run();
 const app = express();
 app.use(cors());
 
+const port = process.env.PORT || 8888; 
+
 app.use(express.json());
 app.use('/', router);
-app.listen(8888, () => {
+app.listen(port, () => {
     console.log('Server is running on port 8888');
 });
