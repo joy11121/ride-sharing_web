@@ -135,7 +135,7 @@ const reserve = async (req, res) => {
     } = rideshare;
 
     // check date & time
-    const deadline = new Date(date.year, date.month, date.day,
+    const deadline = new Date(date.year, date.month - 1, date.day,
         schedule[0].hour, schedule[0].minute);
     if (deadline.getTime() < Date.now())    // todo: buffer
         return res.send(`TOO LAAAAATE`);
@@ -166,7 +166,10 @@ const reserve = async (req, res) => {
         count: count,
         unit_fare: zone_fare[arr_idx] - zone_fare[dep_idx],
     };
-    await userModel.updateOne({id: pax_id}, {$push: {reservation: reservation}}).exec();
+    await userModel.updateOne({id: pax_id},{
+        $push: {reservation: reservation},
+        $inc: {'expense': count * reservation.unit_fare},
+    }).exec();
 
     // modify rideshare
     await userModel.updateOne({id: drv_id}, {
@@ -202,7 +205,7 @@ const cancel = async (req, res) => {
         .exec()).reservation.filter((rsv) => {return no === rsv.no;})[0];
 
     // check date
-    const deadline = new Date(date.year, date.month, date.day,
+    const deadline = new Date(date.year, date.month - 1, date.day,
         dep.hour, dep.minute);
     if (deadline.getTime() <= Date.now())
         return res.send(`TOO LAAAAATE`);
@@ -218,6 +221,10 @@ const cancel = async (req, res) => {
         arr_idx = schedule.findIndex((s) => arr.stop === s.stop);
     for (let idx = dep_idx; idx < arr_idx; idx++)
         volume[idx] -= count;
+
+    await userModel.updateOne({id: pax_id}, {
+        $inc: {'expense': -count * unit_fare},
+    }).exec();
 
     await userModel.updateOne({id: drv_id}, {
         'rideshare.volume': volume,
@@ -358,6 +365,7 @@ const rate = async (req, res) => {
     reservation = reservation[0];
     // console.log(reservation)
 
+    reservation.state = 2;
     await userModel.updateOne({id: pax_id}, {
         $pull: {reservation: {'reservation.no': no}},
         $push: {reservation_hist: reservation}, 
