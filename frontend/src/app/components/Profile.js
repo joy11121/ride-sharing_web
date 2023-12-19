@@ -85,13 +85,11 @@ const Profile = () => {
         setRideHist(user.data.reservation_hist);
         setNextRide(getNextRide(user.data.reservation));
     }
-    useEffect(() => {
-      setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
-    }, []);
+
     useEffect(() => {
         // get the data from database
         getData();
-    }, [id]); 
+    }, []); 
     useEffect(() => {
       setMyName(name);
     }, [name]);
