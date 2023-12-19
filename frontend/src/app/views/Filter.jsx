@@ -15,7 +15,7 @@ import UserContext from "app/contexts/UserContext";
 
 import positionList from "./Maps/PositionList";
 
-const Filter = () => {
+const Filter = ({search}) => {
 
     const {timeValue, setTimeValue, setMyPos, setMyDest} = useContext(UserContext);
 
@@ -35,6 +35,7 @@ const Filter = () => {
         });
         setMyPos(positionList[0].name);
         setMyDest(positionList[positionList.length - 1].name);
+        search();
     }
 
     useEffect(() => {

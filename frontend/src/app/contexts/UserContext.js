@@ -24,7 +24,7 @@ export const UserProvider = ({ children }) => {
     const [myDest, setMyDest] = useState("");
 
     // User data
-    const [id, setId] = useState(JSON.parse(localStorage.getItem("currentUser"))['uid'] || "");
+    const [id, setId] = useState(JSON.parse(localStorage.getItem("currentUser"))?.uid || "");
     const [name, setName] = useState("");
     const [gender, setGender] = useState("");
     const [title, setTitle] = useState("");

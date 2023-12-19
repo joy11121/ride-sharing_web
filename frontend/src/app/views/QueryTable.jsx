@@ -58,7 +58,7 @@ const Small = styled('small')(({ bgcolor }) => ({
   boxShadow: '0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24)',
 }));
 
-const QueryTable = () => {
+const QueryTable = ({rides, setRides, search}) => {
   const { palette } = useTheme();
   const bgError = palette.error.main;
   const bgPrimary = palette.primary.main;
@@ -74,7 +74,6 @@ const QueryTable = () => {
   const [tableMode, setTableMode] = useState("search");
 
   //Data
-  const [rides, setRides] = useState([]);
   const {id, setId, timeValue, myPos, myDest, setMyPos, setMyDest,
     setName, needTableUpdate, setNeedTableUpdate} = useContext(UserContext);
 
@@ -97,31 +96,13 @@ const QueryTable = () => {
     const user = await instance.get('/query', {params: { id }});
     setName(user.data.name);
   }
+  
   useEffect(() => {
     // console.log(timeValue)
     // console.log(timeValue.$y, timeValue.$M + 1, timeValue.$D,
     //   timeValue.$H, timeValue.$m)
     setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
     getData();
-    const search = async() =>{
-      const {data} = await instance.get('/search', {params: {
-        year:timeValue.$y, month:timeValue.$M + 1, day:timeValue.$D,
-        hour:timeValue.$H, minute:timeValue.$m, departure:myPos, arrival:myDest,
-        count: 1,
-      }});
-      if(data && data.length){
-        for(let i = 0; i < data.length; i++){
-          const dep = data[i].schedule.find((s) => myPos === s.stop);
-          const arr = data[i].schedule.find((s) => myDest === s.stop);
-          // console.log(dep, arr)
-          data[i].dep_hour = dep.hour;
-          data[i].dep_minute = dep.minute;
-          data[i].arr_hour = arr.hour;
-          data[i].arr_minute = arr.minute;
-        }
-      }
-      setRides(data);
-    };
     search(); 
     console.log(rides);
 
