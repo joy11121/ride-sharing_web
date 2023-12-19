@@ -15,32 +15,12 @@ import UserContext from "app/contexts/UserContext";
 
 import positionList from "./Maps/PositionList";
 
-const Filter = ({search}) => {
+const Filter = ({search, 
+    locations1, locations2, 
+    setLocations1, setLocations2}
+) => {
 
     const {timeValue, setTimeValue, setMyPos, setMyDest} = useContext(UserContext);
-
-    const [locations1, setLocations1] = useState([]);
-    const [locations2, setLocations2] = useState([]);
-
-    const resetTypes = () => {
-        setLocations1(prev => {
-            const newList = positionList.map((item) => ({name: item[2], checked: false}));
-            newList[0].checked = true;
-            return newList;
-        });
-        setLocations2(prev => {
-            const newList = positionList.map((item) => ({name: item[2], checked: false}));
-            newList[newList.length - 1].checked = true;
-            return newList;
-        });
-        setMyPos(positionList[0].name);
-        setMyDest(positionList[positionList.length - 1].name);
-        search();
-    }
-
-    useEffect(() => {
-        resetTypes();
-    }, []);
 
     return (
         <Grid> 

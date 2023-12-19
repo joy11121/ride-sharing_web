@@ -73,9 +73,7 @@ const QueryTable = ({rides, setRides, search}) => {
   // Switch between tables
   const [tableMode, setTableMode] = useState("search");
 
-  //Data
-  const {id, setId, timeValue, myPos, myDest, setMyPos, setMyDest,
-    setName, needTableUpdate, setNeedTableUpdate} = useContext(UserContext);
+  const { id, myPos, myDest } = useContext(UserContext);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -91,29 +89,6 @@ const QueryTable = ({rides, setRides, search}) => {
     console.log(rides[index])
     setModalRide(rides[index]);
   }
-
-  const getData = async() => {
-    const user = await instance.get('/query', {params: { id }});
-    setName(user.data.name);
-  }
-  
-  useEffect(() => {
-    // console.log(timeValue)
-    // console.log(timeValue.$y, timeValue.$M + 1, timeValue.$D,
-    //   timeValue.$H, timeValue.$m)
-    setId(JSON.parse(localStorage.getItem("currentUser"))['uid']);
-    getData();
-    search(); 
-    console.log(rides);
-
-    setNeedTableUpdate(false);
-
-  }, [timeValue, myPos, myDest, needTableUpdate]);
-
-  // useEffect(() => {
-  //   setMyPos(positionList[0][2]);
-  //   setMyDest(positionList[positionList.length - 1][2]);
-  // }, []);
 
   function checkTime(i) {
     if (i < 10) {

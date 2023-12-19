@@ -102,7 +102,7 @@ const ProductDetails = styled(Box)({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: 'block',
-    width: 100,
+    width: 85,
     marginBottom: '4px'
   }
 });
@@ -278,16 +278,16 @@ function MyRides({ container, type }) {
                     </ProductDetails>
                     <ProductDetails>
                       <Button variant="outlined" color="error" disabled={item.pax_cnt > 0 || item.state !== 0}
-                        onClick={sendUnhost}
+                        onClick={sendUnhost} sx={{width: '100%', height: '30px'}}
                        endIcon={<CancelIcon />}>
-                        取消行程
+                        取消 
                       </Button>
                     </ProductDetails>
                     <ProductDetails>
                       <Button variant="outlined" color="success" disabled={item.state !== 0}
-                        onClick={sendComplete} 
+                        onClick={sendComplete} sx={{marginLeft:'10px', width: '90%', height: '30px'}}
                        endIcon={<SendIcon />}>
-                        確認行程結束
+                        確認結束
                       </Button>
                     </ProductDetails>
                   </Box>))
@@ -328,14 +328,15 @@ function MyRides({ container, type }) {
                       </ProductDetails>
                       <ProductDetails>
                         <Button variant="outlined" color="error" disabled={item.state !== 0}
-                          onClick={() => sendCancel(item.no)}
+                          onClick={() => sendCancel(item.no)} sx={{width: '90%', height: '35px'}}
                         endIcon={<CancelIcon />}>
-                          取消預約
+                          取消
                         </Button>
                       </ProductDetails>
                       {item.state === 0 ?
                         <ProductDetails sx={{paddingLeft:'20px'}}>
-                          <Button variant="outlined" color="error" disabled>
+                          <Button variant="outlined" color="error" 
+                          sx={{width: '90%', height: '30px'}} disabled>
                             尚未結束
                           </Button>
                         </ProductDetails>
@@ -345,7 +346,7 @@ function MyRides({ container, type }) {
                             sendRating={sendRating}
                             no={item.no}
                             pax_id={id}
-                            disabled={item.state === 1}
+                            disabled={item.state === 2}
                           />
                         </ProductDetails>}
                     </Box>))
