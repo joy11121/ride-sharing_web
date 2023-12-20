@@ -8,6 +8,7 @@ import { Box, styled, useTheme, Button } from '@mui/material';
 import { Paragraph, H1, H2 } from '../templates/Typography';
 import GoogleIcon from '@mui/icons-material/Google';
 import FacebookIcon from '@mui/icons-material/Facebook';
+import dreamer from './illustrations/dreamer.svg';
 
 const FlexBox = styled(Box)(() => ({ display: 'flex', alignItems: 'center' }));
 
@@ -83,7 +84,7 @@ const Login = () => {
         	<Grid container style={{ height: '100vh' }}>
           	<Grid item sm={8.8} xs={12}>
             	<JustifyBox p={4} height="100%" sx={{ minWidth: 320 }}>
-              	<img src="/assets/images/illustrations/dreamer.svg" width="100%" alt="" />
+              	<img src={dreamer} width="100%" alt="" />
             	</JustifyBox>
           	</Grid>
 

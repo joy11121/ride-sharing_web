@@ -6,6 +6,7 @@ import { Checkbox, Grid, TextField } from '@mui/material';
 import { Box, styled, useTheme } from '@mui/material';
 import { Paragraph, H1, H2 } from '../templates/Typography';
 import { NavLink, useNavigate } from 'react-router-dom';
+import posting from './illustrations/posting_photo.svg';
 
 const FlexBox = styled(Box)(() => ({ display: 'flex', alignItems: 'center' }));
 
@@ -48,7 +49,7 @@ const SignUp = () => {
           <Grid item sm={8.8} xs={12}>
             <JustifyBox p={4} height="100%" sx={{ minWidth: 320 }}>
               <img
-              	width="100%" alt="Register" src="/assets/images/illustrations/posting_photo.svg"
+              	width="100%" alt="Register" src={posting}
               />
             </JustifyBox>
           </Grid>
