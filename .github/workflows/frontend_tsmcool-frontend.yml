@@ -58,5 +58,5 @@ jobs:
         with:
           app-name: 'tsmcool-frontend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_96D85C78C6DC494683C21FAFAC0C1231 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_ECFD0C9E71534FD19BF7EBE8F8C02254 }}
           package: .
