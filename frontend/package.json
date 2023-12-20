@@ -26,7 +26,6 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.123",
     "@mui/material": "^5.11.13",
-    "@mui/styles": "^5.15.0",
     "@mui/x-date-pickers": "^6.18.4",
     "@react-leaflet/core": "^2.1.0",
     "@reduxjs/toolkit": "^1.9.3",

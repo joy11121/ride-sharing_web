@@ -22,7 +22,7 @@ import BasicRating from './rateItem';
 
 import instance from 'api';
 import UserContext from 'app/contexts/UserContext';
-import { makeStyles } from '@mui/styles';
+// import { makeStyles } from '@mui/styles';
 
 
 import img1 from './faces/2.jpg';
@@ -66,23 +66,23 @@ const CartBox = styled(Box)({
   }
 });
 
-const useProductBoxStyles = makeStyles({
-  incomplete: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '18px 18px',
-    transition: 'background 300ms ease',
-    '&:hover': { background: 'rgba(0,0,0,0.05)' }
-  },
-  complete: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '18px 18px',
-    transition: 'background 300ms ease',
-    background: 'rgba(255,148,148,0.05)',
-    // '&:hover': { background: 'rgba(255,148,148,0.05)' }
-  }
-});
+// const useProductBoxStyles = makeStyles({
+//   incomplete: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     padding: '18px 18px',
+//     transition: 'background 300ms ease',
+//     '&:hover': { background: 'rgba(0,0,0,0.05)' }
+//   },
+//   complete: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     padding: '18px 18px',
+//     transition: 'background 300ms ease',
+//     background: 'rgba(255,148,148,0.05)',
+//     // '&:hover': { background: 'rgba(255,148,148,0.05)' }
+//   }
+// });
 const ProductBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
@@ -117,7 +117,7 @@ function MyRides({ container, type }) {
   const [rides, setRides] = useState([]);
   const {id, needTableUpdate, setNeedTableUpdate} = useContext(UserContext);
 
-  const productBoxClass = useProductBoxStyles();
+  // const productBoxClass = useProductBoxStyles();
 
   const getRideData = async () => {
     const queryRsv = async() =>{
@@ -237,10 +237,11 @@ function MyRides({ container, type }) {
               {rides.length ?
                 type === 'post' ? 
                 rides.map((item, i) => (
-                  <Box key={i} className={
-                    item.state === 0 ? productBoxClass.incomplete
-                    : productBoxClass.complete
-                  }>
+                  // <Box key={i} className={
+                  //   item.state === 0 ? productBoxClass.incomplete
+                  //   : productBoxClass.complete
+                  // }>
+                  <ProductBox key={i}>
                     <Box mr={1}>
                       <IMG src={blist[(item.schedule[0].minute * item.schedule[item.schedule.length - 1].minute)
                          % blist.length]} alt={"行程日期"} />
@@ -290,13 +291,14 @@ function MyRides({ container, type }) {
                         確認結束
                       </Button>
                     </ProductDetails>
-                  </Box>))
+                    </ProductBox> ))
                 :  
                   rides.map((item, i) => (
-                    <Box key={i} className={
-                      item.state === 0 ? productBoxClass.incomplete
-                      : productBoxClass.complete
-                    }>
+                    // <Box key={i} className={
+                    //   item.state === 0 ? productBoxClass.incomplete
+                    //   : productBoxClass.complete
+                    // }>
+                    <ProductBox key={i}>
                       <Box mr={1}>
                         <IMG src={imglist[(item.dep.minute * item.arr.minute) % imglist.length]} alt={"司機/車牌"} />
                       </Box>
@@ -349,7 +351,7 @@ function MyRides({ container, type }) {
                             disabled={item.state === 2}
                           />
                         </ProductDetails>}
-                    </Box>))
+                      </ProductBox>))
                 :
                 <ProductDetails>
                   <div style={{opacity:0.6, padding: 10}}>
